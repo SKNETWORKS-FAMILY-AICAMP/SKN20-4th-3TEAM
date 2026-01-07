@@ -15,10 +15,18 @@
             </div>
             <ul class="navbar-menu">
                 <li><a href="{% url 'pages:home' %}">홈</a></li>
-                <li><a href="{% url 'pages:chat' %}">채팅</a></li>
-                <li><a href="{% url 'pages:pet_settings' %}">반려견 설정</a></li>
-                <li><a href="{% url 'pages:login' %}">로그인</a></li>
-                <li><a href="{% url 'pages:signup' %}">회원가입</a></li>
+                
+                {% if user.is_authenticated %}
+                    <!-- 로그인한 사용자 메뉴 -->
+                    <li><a href="{% url 'pages:chat' %}">채팅</a></li>
+                    <li><a href="{% url 'pages:pet_settings' %}">반려견 설정</a></li>
+                    <li><span style="color: #666;">{{ user.username }}님</span></li>
+                    <li><a href="{% url 'pages:logout' %}">로그아웃</a></li>
+                {% else %}
+                    <!-- 로그인하지 않은 사용자 메뉴 -->
+                    <li><a href="{% url 'pages:login' %}">로그인</a></li>
+                    <li><a href="{% url 'pages:signup' %}">회원가입</a></li>
+                {% endif %}
             </ul>
         </div>
     </nav>

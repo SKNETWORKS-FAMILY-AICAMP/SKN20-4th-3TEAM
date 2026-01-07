@@ -120,3 +120,24 @@ STATICFILES_DIRS = [
     BASE_DIR / 'pages' / 'static',
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# 이메일 설정 (Gmail 사용)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'beauty1balance@gmail.com'  # 여기에 실제 Gmail 주소 입력
+EMAIL_HOST_PASSWORD = 'slteovykrejyhzuv'  # 여기에 Gmail 앱 비밀번호 입력
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# 네이버 메일 사용시 아래 설정으로 변경
+# EMAIL_HOST = 'smtp.naver.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your-naver-id@naver.com'
+# EMAIL_HOST_PASSWORD = 'your-naver-password'

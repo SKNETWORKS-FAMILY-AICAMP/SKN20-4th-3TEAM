@@ -1,11 +1,12 @@
 {% extends 'pages/base.html' %}
 
-{% block title %}회원가입 - DogChat{% endblock %}
+{% block title %}회원가입 완료 - DogChat{% endblock %}
 
 {% block content %}
 <div class="page-signup">
     <div class="signup-container">
-        <h1>회원가입</h1>
+        <h1>회원가입 완료</h1>
+        <p class="subtitle">이메일 인증이 완료되었습니다. 회원 정보를 입력해주세요.</p>
         
         {% if messages %}
         <div class="messages">
@@ -17,21 +18,37 @@
         </div>
         {% endif %}
 
-        <form method="POST" class="signup-form">
+        <form method="POST" action="{% url 'pages:complete_signup' %}" class="signup-form">
             {% csrf_token %}
+            <input type="hidden" name="email" value="{{ email }}">
             
             <div class="form-group">
-                <label for="email">이메일</label>
-                <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
-                <small>인증 코드가 이메일로 전송됩니다</small>
+                <label for="email-display">이메일</label>
+                <input type="email" id="email-display" value="{{ email }}" disabled 
+                       style="background-color: #f5f5f5;">
             </div>
 
-            <button type="submit" class="btn btn-primary">인증 코드 받기</button>
-        </form>
+            <div class="form-group">
+                <label for="username">아이디 (닉네임)</label>
+                <input type="text" id="username" name="username" 
+                       placeholder="사용할 아이디" required>
+                <small>영문, 숫자 포함 4자 이상</small>
+            </div>
 
-        <div class="signup-links">
-            이미 계정이 있으신가요? <a href="{% url 'pages:login' %}">로그인</a>
-        </div>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" name="password" 
+                       placeholder="8자 이상의 비밀번호" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password-confirm">비밀번호 확인</label>
+                <input type="password" id="password-confirm" name="password_confirm" 
+                       placeholder="비밀번호 재입력" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">회원가입 완료</button>
+        </form>
     </div>
 </div>
 
@@ -53,8 +70,14 @@
     }
     .signup-container h1 {
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 15px;
         color: #333;
+    }
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 0.9em;
     }
     .messages {
         margin-bottom: 20px;
@@ -121,19 +144,6 @@
     }
     .btn-primary:hover {
         background-color: #45a049;
-    }
-    .signup-links {
-        text-align: center;
-        font-size: 0.9em;
-        color: #666;
-        margin-top: 20px;
-    }
-    .signup-links a {
-        color: #2196F3;
-        text-decoration: none;
-    }
-    .signup-links a:hover {
-        text-decoration: underline;
     }
 </style>
 {% endblock %}

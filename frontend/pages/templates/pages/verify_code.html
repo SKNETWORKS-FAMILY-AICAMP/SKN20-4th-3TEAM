@@ -1,11 +1,12 @@
 {% extends 'pages/base.html' %}
 
-{% block title %}회원가입 - DogChat{% endblock %}
+{% block title %}이메일 인증 - DogChat{% endblock %}
 
 {% block content %}
 <div class="page-signup">
     <div class="signup-container">
-        <h1>회원가입</h1>
+        <h1>이메일 인증</h1>
+        <p class="subtitle">{{ email }}로 발송된 인증 코드를 입력해주세요</p>
         
         {% if messages %}
         <div class="messages">
@@ -17,20 +18,28 @@
         </div>
         {% endif %}
 
-        <form method="POST" class="signup-form">
+        <form method="POST" action="{% url 'pages:verify_code' %}" class="signup-form">
             {% csrf_token %}
+            <input type="hidden" name="email" value="{{ email }}">
             
             <div class="form-group">
-                <label for="email">이메일</label>
-                <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
-                <small>인증 코드가 이메일로 전송됩니다</small>
+                <label for="code">인증 코드 (6자리)</label>
+                <input type="text" id="code" name="code" placeholder="123456" 
+                       maxlength="6" pattern="\d{6}" required 
+                       style="text-align: center; font-size: 1.5em; letter-spacing: 5px;">
             </div>
 
-            <button type="submit" class="btn btn-primary">인증 코드 받기</button>
+            <button type="submit" class="btn btn-primary">인증 확인</button>
+        </form>
+
+        <form method="POST" action="{% url 'pages:resend_code' %}" style="margin-top: 15px;">
+            {% csrf_token %}
+            <input type="hidden" name="email" value="{{ email }}">
+            <button type="submit" class="btn btn-secondary">인증 코드 재발송</button>
         </form>
 
         <div class="signup-links">
-            이미 계정이 있으신가요? <a href="{% url 'pages:login' %}">로그인</a>
+            <a href="{% url 'pages:signup' %}">처음으로 돌아가기</a>
         </div>
     </div>
 </div>
@@ -53,8 +62,14 @@
     }
     .signup-container h1 {
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 15px;
         color: #333;
+    }
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 0.9em;
     }
     .messages {
         margin-bottom: 20px;
@@ -86,12 +101,10 @@
         font-weight: bold;
         color: #333;
     }
-    .form-group input[type="text"],
-    .form-group input[type="email"],
-    .form-group input[type="password"] {
+    .form-group input[type="text"] {
         width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
+        padding: 15px;
+        border: 2px solid #ddd;
         border-radius: 4px;
         font-size: 1em;
         box-sizing: border-box;
@@ -99,12 +112,6 @@
     .form-group input:focus {
         outline: none;
         border-color: #2196F3;
-    }
-    .form-group small {
-        display: block;
-        color: #999;
-        font-size: 0.85em;
-        margin-top: 5px;
     }
     .btn {
         width: 100%;
@@ -121,6 +128,13 @@
     }
     .btn-primary:hover {
         background-color: #45a049;
+    }
+    .btn-secondary {
+        background-color: #757575;
+        color: white;
+    }
+    .btn-secondary:hover {
+        background-color: #616161;
     }
     .signup-links {
         text-align: center;
