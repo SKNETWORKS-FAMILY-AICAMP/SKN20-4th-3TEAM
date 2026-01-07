@@ -55,12 +55,29 @@ retriever = get_retriever(vectorstore, k_D=5, k_B=5)
 # LLM 정의
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
-# RAG 파이프라인
-rag_pipeline = RunnableParallel(
-    question=get_rewrite_prompt() | llm | StrOutputParser(),
-    context=RunnableLambda(lambda x: format_docs(retriever.invoke(x)))
-) | get_rag_prompt() | llm | StrOutputParser()
+    
+def process_with_self_check(question_text):
 
+    # 1. 질문 재작성
+    rewrite_chain = get_rewrite_prompt() | llm | StrOutputParser()
+    rewritten_question = rewrite_chain.invoke({"question": question_text})
+    
+    # 2. 리트리버로 문서 검색
+    found_docs = retriever.invoke(rewritten_question)
+    
+    # 3. self_check_retriver로 2차 필터링
+    filtered_docs = self_check_retriver(found_docs, question_text, llm)
+    
+    # 4. 필터링된 문서로 context 생성
+    context = format_docs(filtered_docs)
+    
+    return {
+        "question": rewritten_question,
+        "context": context
+    }
+    
+rag_pipeline = RunnableLambda(process_with_self_check) | get_rag_prompt() | llm | StrOutputParser()
+    
 
 def run_rag(question: str) -> str:
     return rag_pipeline.invoke(question)
