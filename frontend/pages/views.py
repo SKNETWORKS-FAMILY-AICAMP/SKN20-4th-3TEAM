@@ -232,6 +232,50 @@ def chat(request):
 
 def pet_settings(request):
     """반려견 설정 페이지"""
+    from .models import Pet
+    
+    if not request.user.is_authenticated:
+        messages.error(request, '로그인이 필요합니다.')
+        return redirect('pages:login')
+    
+    if request.method == 'POST':
+        # 폼 데이터 받기
+        name = request.POST.get('name')
+        breed = request.POST.get('breed')
+        age = request.POST.get('age')
+        weight = request.POST.get('weight')
+        gender = request.POST.get('gender')
+        neutered = request.POST.get('neutered')
+        diseases = request.POST.get('diseases', '')
+        medications = request.POST.get('medications', '')
+        allergies = request.POST.get('allergies', '')
+        
+        # 필수 항목 확인
+        if not all([name, breed, age, weight, gender, neutered]):
+            messages.error(request, '필수 항목을 모두 입력해주세요.')
+            return render(request, 'pages/pet_settings.html')
+        
+        try:
+            # 반려견 등록
+            Pet.objects.create(
+                owner=request.user,
+                name=name,
+                breed=breed,
+                age=int(age),
+                weight=float(weight),
+                gender=gender,
+                neutered=neutered,
+                diseases=diseases,
+                medications=medications,
+                allergies=allergies
+            )
+            messages.success(request, f'{name}이(가) 성공적으로 등록되었습니다!')
+            return redirect('pages:select_pet')
+            
+        except Exception as e:
+            messages.error(request, f'반려견 등록 실패: {str(e)}')
+            return render(request, 'pages/pet_settings.html')
+    
     return render(request, 'pages/pet_settings.html')
 
 
@@ -242,7 +286,16 @@ def reset_password(request):
 
 def select_pet(request):
     """반려견 선택 페이지"""
-    return render(request, 'pages/select_pet.html')
+    from .models import Pet
+    
+    if not request.user.is_authenticated:
+        messages.error(request, '로그인이 필요합니다.')
+        return redirect('pages:login')
+    
+    # 사용자의 반려견 목록 가져오기
+    pets = Pet.objects.filter(owner=request.user)
+    
+    return render(request, 'pages/select_pet.html', {'pets': pets})
 
 
 def withdraw(request):

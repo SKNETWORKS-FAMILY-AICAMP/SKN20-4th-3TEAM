@@ -9,28 +9,25 @@
         <p class="subtitle">채팅을 진행할 반려견을 선택하거나 새로운 반려견을 추가하세요.</p>
 
         <div class="pets-grid">
-            <!-- 더미 반려견 카드 -->
-            <div class="pet-card">
-                <div class="pet-avatar">🐕</div>
-                <h3>뽀삐</h3>
-                <p class="pet-info">포메라니안 · 3살</p>
-                <a href="{% url 'pages:chat' %}" class="btn-select">선택</a>
-            </div>
+            {% if pets %}
+                <!-- 등록된 반려견 목록 -->
+                {% for pet in pets %}
+                <div class="pet-card">
+                    <div class="pet-avatar">🐕</div>
+                    <h3>{{ pet.name }}</h3>
+                    <p class="pet-info">{{ pet.breed }} · {{ pet.age }}살 · {{ pet.weight }}kg</p>
+                    <a href="{% url 'pages:chat' %}?pet_id={{ pet.id }}" class="btn-select">선택</a>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- 등록된 반려견이 없을 때 -->
+                <div class="no-pets-message">
+                    <p>아직 등록된 반려견이 없습니다.</p>
+                    <p>새로운 반려견을 등록해주세요!</p>
+                </div>
+            {% endif %}
 
-            <div class="pet-card">
-                <div class="pet-avatar">🐶</div>
-                <h3>초코</h3>
-                <p class="pet-info">라브라도 · 5살</p>
-                <a href="{% url 'pages:chat' %}" class="btn-select">선택</a>
-            </div>
-
-            <div class="pet-card">
-                <div class="pet-avatar">🐩</div>
-                <h3>몽이</h3>
-                <p class="pet-info">푸들 · 2살</p>
-                <a href="{% url 'pages:chat' %}" class="btn-select">선택</a>
-            </div>
-
+            <!-- 반려견 추가 카드 -->
             <div class="pet-card add-pet">
                 <div class="pet-avatar">➕</div>
                 <h3>반려견 추가</h3>
@@ -114,6 +111,16 @@
     }
     .add-pet .btn-select:hover {
         background-color: #0b7dda;
+    }
+    .no-pets-message {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 20px;
+        color: #999;
+    }
+    .no-pets-message p {
+        font-size: 1.2em;
+        margin-bottom: 10px;
     }
 </style>
 {% endblock %}
