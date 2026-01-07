@@ -1,0 +1,120 @@
+{% extends 'pages/base.html' %}
+
+{% block title %}회원 탈퇴 - DogChat{% endblock %}
+
+{% block content %}
+<div class="page-withdraw">
+    <div class="withdraw-container">
+        <h1>회원 탈퇴</h1>
+        
+        <div class="warning-box">
+            <p><strong>⚠️ 주의:</strong> 회원을 탈퇴하면 모든 데이터가 영구적으로 삭제됩니다.</p>
+        </div>
+
+        <form method="POST" class="withdraw-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="password">비밀번호 확인</label>
+                <input type="password" id="password" name="password" placeholder="현재 비밀번호 입력" required>
+            </div>
+
+            <div class="form-group checkbox">
+                <input type="checkbox" id="confirm-withdraw" name="confirm_withdraw" required>
+                <label for="confirm-withdraw">모든 데이터 삭제에 동의합니다</label>
+            </div>
+
+            <button type="submit" class="btn btn-danger">회원 탈퇴</button>
+        </form>
+
+        <div class="withdraw-links">
+            <a href="{% url 'pages:home' %}">돌아가기</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .page-withdraw {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+        padding: 20px;
+    }
+    .withdraw-container {
+        background: white;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 400px;
+    }
+    .withdraw-container h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #333;
+    }
+    .warning-box {
+        background-color: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 4px;
+        padding: 15px;
+        margin-bottom: 30px;
+        color: #856404;
+    }
+    .withdraw-form {
+        margin-bottom: 20px;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #333;
+    }
+    .form-group input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1em;
+        box-sizing: border-box;
+    }
+    .form-group.checkbox {
+        display: flex;
+        align-items: center;
+    }
+    .form-group.checkbox input {
+        margin-right: 10px;
+        width: auto;
+    }
+    .form-group.checkbox label {
+        margin: 0;
+        font-weight: normal;
+    }
+    .btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 1em;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .btn-danger {
+        background-color: #f44336;
+        color: white;
+    }
+    .withdraw-links {
+        text-align: center;
+    }
+    .withdraw-links a {
+        color: #2196F3;
+        text-decoration: none;
+    }
+    .withdraw-links a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends 'pages/base.html' %}
+
+{% block title %}회원가입 - DogChat{% endblock %}
+
+{% block content %}
+<div class="page-signup">
+    <div class="signup-container">
+        <h1>회원가입</h1>
+        
+        <form method="POST" class="signup-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="email">이메일</label>
+                <div class="email-input-group">
+                    <input type="email" id="email" name="email" placeholder="example@email.com" required>
+                    <button type="button" class="btn-verify">인증</button>
+                </div>
+                <small>인증 이메일이 전송되었습니다 (더미)</small>
+            </div>
+
+            <div class="form-group">
+                <label for="email-verify">이메일 인증 코드</label>
+                <input type="text" id="email-verify" name="email_verify_code" placeholder="6자리 코드 입력" maxlength="6">
+            </div>
+
+            <div class="form-group">
+                <label for="nickname">닉네임</label>
+                <input type="text" id="nickname" name="nickname" placeholder="사용할 닉네임" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" name="password" placeholder="8자 이상의 비밀번호" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password-confirm">비밀번호 확인</label>
+                <input type="password" id="password-confirm" name="password_confirm" placeholder="비밀번호 재입력" required>
+            </div>
+
+            <div class="form-group checkbox">
+                <input type="checkbox" id="agree-terms" name="agree_terms" required>
+                <label for="agree-terms">이용약관에 동의합니다</label>
+            </div>
+
+            <div class="form-group checkbox">
+                <input type="checkbox" id="agree-privacy" name="agree_privacy" required>
+                <label for="agree-privacy">개인정보 처리방침에 동의합니다</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">회원가입</button>
+        </form>
+
+        <div class="signup-links">
+            이미 계정이 있으신가요? <a href="{% url 'pages:login' %}">로그인</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .page-signup {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        padding: 20px;
+    }
+    .signup-container {
+        background: white;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 450px;
+    }
+    .signup-container h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #333;
+    }
+    .signup-form {
+        margin-bottom: 20px;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #333;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1em;
+        box-sizing: border-box;
+    }
+    .form-group small {
+        display: block;
+        color: #999;
+        font-size: 0.85em;
+        margin-top: 5px;
+    }
+    .email-input-group {
+        display: flex;
+        gap: 10px;
+    }
+    .email-input-group input {
+        flex: 1;
+    }
+    .btn-verify {
+        padding: 10px 20px;
+        background-color: #2196F3;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9em;
+        white-space: nowrap;
+    }
+    .form-group.checkbox {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .form-group.checkbox input {
+        margin-right: 10px;
+        width: auto;
+    }
+    .form-group.checkbox label {
+        margin: 0;
+        font-weight: normal;
+    }
+    .btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 1em;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .btn-primary {
+        background-color: #4CAF50;
+        color: white;
+    }
+    .signup-links {
+        text-align: center;
+        font-size: 0.9em;
+        color: #666;
+    }
+    .signup-links a {
+        color: #2196F3;
+        text-decoration: none;
+    }
+    .signup-links a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
