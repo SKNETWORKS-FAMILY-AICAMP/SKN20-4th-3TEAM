@@ -65,3 +65,46 @@ class Pet(models.Model):
     
     def __str__(self):
         return f"{self.name} ({self.owner.username})"
+    
+
+
+
+class ChatSession(models.Model):
+    ''' 채팅 세션 모델'''
+    id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE) #FK to User
+    dog_id = models.ForeignKey(Pet, on_delete=models.CASCADE) #FK to Pet
+    title = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    last_message_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'chatsession'
+
+    def __str__(self):
+        return self.title
+
+
+class ChatMessage(models.Model):
+    '''채팅 메시지 모델'''
+    TRIAGE_LEVEL_CHOICES = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+    ]
+
+    id = models.AutoField(primary_key=True)
+    session_id = models.ForeignKey(ChatSession, on_delete=models.CASCADE) #FK to ChatSession
+    speaker = models.CharField(max_length=100)  # 메시지 주체
+    content = models.TextField()
+    sources = models.JSONField(blank=True, null=True)
+    triage_level = models.CharField(max_length=20, choices=TRIAGE_LEVEL_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'chatmessage'
+
+    def __str__(self):
+        return f"{self.speaker}: {self.content[:50]}"
