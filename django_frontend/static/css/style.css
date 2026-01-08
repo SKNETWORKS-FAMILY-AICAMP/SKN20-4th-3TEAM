@@ -27,8 +27,8 @@ body {
     gap: 1rem;
 }
 
-.nav-center h1 {
-    font-size: 1.5rem;
+.nav-right .nav-center h1 {
+    font-size: 1.3rem;
     color: #667eea;
 }
 
