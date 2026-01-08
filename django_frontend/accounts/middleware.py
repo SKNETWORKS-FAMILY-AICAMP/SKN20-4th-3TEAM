@@ -16,16 +16,23 @@ class JWTAuthMiddleware:
         # 세션에 JWT 토큰이 있는지 확인
         access_token = request.session.get('access_token')
         email = request.session.get('email')
+        username = request.session.get('username')
         
         if access_token and email:
             # 토큰이 유효하면 request.user에 간단한 객체 설정
             # Django의 @login_required와 호환되도록 is_authenticated 추가
             class SimpleUser:
                 is_authenticated = True
+                
+                def __init__(self, email, username):
+                    self.email = email
+                    # FastAPI에서 받은 username 사용, 없으면 이메일 앞부분 사용
+                    self.username = username if username else email.split('@')[0]
+                
                 def __str__(self):
-                    return email
+                    return self.email
             
-            request.user = SimpleUser()
+            request.user = SimpleUser(email, username)
         
         response = self.get_response(request)
         return response

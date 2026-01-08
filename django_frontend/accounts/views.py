@@ -221,6 +221,8 @@ def login_view(request):
                 request.session['access_token'] = data['access_token']
                 request.session['email'] = email
                 request.session['token_type'] = data.get('token_type', 'bearer')
+                # FastAPI에서 받은 username 저장
+                request.session['username'] = data.get('username', email.split('@')[0])
                 request.session.modified = True
                 
                 messages.success(request, '로그인 되었습니다.')
