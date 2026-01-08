@@ -1,28 +1,97 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Header
 from sqlalchemy.orm import Session
+from jose import JWTError, jwt
 from database import get_db
-from models import DogProfile
+from models import DogProfile, User
 from schemas import DogProfileCreate, DogProfileResponse
-from typing import List
+from typing import List, Optional
 
 router = APIRouter()
 
+# JWT 설정
+SECRET_KEY = "your-secret-key-change-this-in-production"
+ALGORITHM = "HS256"
+
+
+def get_current_user(authorization: Optional[str] = Header(None)) -> dict:
+    """JWT 토큰에서 현재 사용자 정보 추출"""
+    if not authorization:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="토큰이 없습니다."
+        )
+    
+    try:
+        # "Bearer <token>" 형식에서 토큰 추출
+        if not authorization.startswith("Bearer "):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="유효하지 않은 인증 형식입니다."
+            )
+        
+        token = authorization[7:]  # "Bearer " 제거
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        
+        if email is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="토큰이 유효하지 않습니다."
+            )
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="토큰이 유효하지 않습니다."
+        )
+    
+    return {"email": email}
+
 
 @router.get("/", response_model=List[DogProfileResponse])
-def get_dog_profiles(db: Session = Depends(get_db)):
-    """모든 강아지 프로필 조회 (임시 - 실제로는 사용자별로 필터링)"""
-    profiles = db.query(DogProfile).all()
+def get_dog_profiles(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """현재 사용자의 강아지 프로필 조회"""
+    email = current_user["email"]
+    
+    # 사용자 찾기
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="사용자를 찾을 수 없습니다."
+        )
+    
+    # 해당 사용자의 강아지 프로필만 조회
+    profiles = db.query(DogProfile).filter(DogProfile.owner_id == user.id).all()
     return profiles
 
 
 @router.post("/", response_model=DogProfileResponse, status_code=status.HTTP_201_CREATED)
-def create_dog_profile(profile: DogProfileCreate, db: Session = Depends(get_db)):
-    """강아지 프로필 생성"""
+def create_dog_profile(
+    profile: DogProfileCreate,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """현재 사용자를 위한 강아지 프로필 생성"""
+    email = current_user["email"]
+    
+    # 사용자 찾기
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="사용자를 찾을 수 없습니다."
+        )
+    
+    # 사용자에게 소속된 새 강아지 프로필 생성
     new_profile = DogProfile(
         name=profile.name,
         breed=profile.breed,
         age=profile.age,
-        personality=profile.personality
+        personality=profile.personality,
+        owner_id=user.id  # 현재 사용자의 ID 설정
     )
     
     db.add(new_profile)
@@ -33,9 +102,27 @@ def create_dog_profile(profile: DogProfileCreate, db: Session = Depends(get_db))
 
 
 @router.get("/{dog_id}", response_model=DogProfileResponse)
-def get_dog_profile(dog_id: int, db: Session = Depends(get_db)):
-    """특정 강아지 프로필 조회"""
-    profile = db.query(DogProfile).filter(DogProfile.id == dog_id).first()
+def get_dog_profile(
+    dog_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """현재 사용자의 특정 강아지 프로필 조회"""
+    email = current_user["email"]
+    
+    # 사용자 찾기
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="사용자를 찾을 수 없습니다."
+        )
+    
+    # 해당 강아지가 현재 사용자의 것인지 확인
+    profile = db.query(DogProfile).filter(
+        DogProfile.id == dog_id,
+        DogProfile.owner_id == user.id
+    ).first()
     
     if not profile:
         raise HTTPException(
@@ -47,9 +134,28 @@ def get_dog_profile(dog_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{dog_id}", response_model=DogProfileResponse)
-def update_dog_profile(dog_id: int, profile: DogProfileCreate, db: Session = Depends(get_db)):
-    """강아지 프로필 수정"""
-    existing_profile = db.query(DogProfile).filter(DogProfile.id == dog_id).first()
+def update_dog_profile(
+    dog_id: int,
+    profile: DogProfileCreate,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """현재 사용자의 강아지 프로필 수정"""
+    email = current_user["email"]
+    
+    # 사용자 찾기
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="사용자를 찾을 수 없습니다."
+        )
+    
+    # 해당 강아지가 현재 사용자의 것인지 확인
+    existing_profile = db.query(DogProfile).filter(
+        DogProfile.id == dog_id,
+        DogProfile.owner_id == user.id
+    ).first()
     
     if not existing_profile:
         raise HTTPException(
@@ -70,9 +176,27 @@ def update_dog_profile(dog_id: int, profile: DogProfileCreate, db: Session = Dep
 
 
 @router.delete("/{dog_id}")
-def delete_dog_profile(dog_id: int, db: Session = Depends(get_db)):
-    """강아지 프로필 삭제"""
-    profile = db.query(DogProfile).filter(DogProfile.id == dog_id).first()
+def delete_dog_profile(
+    dog_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """현재 사용자의 강아지 프로필 삭제"""
+    email = current_user["email"]
+    
+    # 사용자 찾기
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="사용자를 찾을 수 없습니다."
+        )
+    
+    # 해당 강아지가 현재 사용자의 것인지 확인
+    profile = db.query(DogProfile).filter(
+        DogProfile.id == dog_id,
+        DogProfile.owner_id == user.id
+    ).first()
     
     if not profile:
         raise HTTPException(
