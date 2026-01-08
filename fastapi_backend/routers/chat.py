@@ -49,7 +49,7 @@ def get_current_user(authorization: Optional[str] = Header(None)) -> dict:
 
 class ChatRequest(BaseModel):
     message: str
-
+    dog_progile: 
 
 class ChatResponse(BaseModel):
     response: str
@@ -79,11 +79,15 @@ def send_message(
         DogProfile.owner_id == user.id
     ).first()
     
+
     if not dog:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="다른 사용자의 강아지와는 채팅할 수 없습니다."
         )
+    
+    # 강아지 정보 가져오기
+    dog_profile = db.query(DogProfile).filter(DogProfile.id == dog_id).first()
     
     # 메시지 저장
     new_message = ChatMessage(
