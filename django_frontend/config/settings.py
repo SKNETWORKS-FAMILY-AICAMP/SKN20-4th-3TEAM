@@ -38,6 +38,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'accounts.middleware.JWTAuthMiddleware',  # JWT 토큰 기반 세션 인증
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -65,6 +66,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# FastAPI backend의 dog_chat.db를 직접 사용
 
 DATABASES = {
     'default': {
@@ -128,3 +130,8 @@ LOGOUT_REDIRECT_URL = 'accounts:login'
 
 # FastAPI 백엔드 URL
 FASTAPI_BASE_URL = 'http://localhost:8001'
+
+# 세션 설정
+# SESSION_COOKIE_AGE = 10  # 초 단위
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # 브라우저 닫으면 세션 만료
+# SESSION_COOKIE_HTTPONLY = True  # JavaScript에서 접근 불가

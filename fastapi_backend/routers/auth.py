@@ -13,7 +13,7 @@ router = APIRouter()
 # JWT 설정 (auth_utils.py와 동일해야 함)
 SECRET_KEY = "your-secret-key-change-this-in-production"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 1일
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 def hash_password(password: str):
@@ -112,7 +112,11 @@ def login(user_login: UserLogin, db: Session = Depends(get_db)):
     
     access_token = create_access_token(data={"sub": user.email})
     
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "username": user.username
+    }
 
 
 @router.post("/reset-password")
