@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from jose import JWTError, jwt
+from jose import jwt
 from datetime import datetime, timedelta
 from database import get_db
 from models import User
@@ -10,10 +10,10 @@ import hashlib
 
 router = APIRouter()
 
-# JWT 설정
+# JWT 설정 (auth_utils.py와 동일해야 함)
 SECRET_KEY = "your-secret-key-change-this-in-production"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 1일
 
 
 def hash_password(password: str):
