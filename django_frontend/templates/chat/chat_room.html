@@ -1,0 +1,367 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ dog.name }}와의 채팅{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+    <!-- 왼쪽: 프로필 및 히스토리 -->
+    <div class="chat-sidebar">
+        <!-- 강아지 프로필 정보 -->
+        <div class="dog-profile-card">
+            <div class="dog-avatar-large">
+                {% if dog.profile_image %}
+                    <img src="{{ dog.profile_image }}" alt="{{ dog.name }}">
+                {% else %}
+                    <div class="avatar-placeholder-large">🐕</div>
+                {% endif %}
+            </div>
+            <h3 class="dog-name">{{ dog.name }}</h3>
+            
+            <div class="dog-info-grid">
+                <div class="info-item">
+                    <span class="info-label">견종</span>
+                    <span class="info-value">{{ dog.breed|default:"믹스견" }}</span>
+                </div>
+                {% if dog.age %}
+                <div class="info-item">
+                    <span class="info-label">나이</span>
+                    <span class="info-value">{{ dog.age }}살</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            {% if dog.personality %}
+                {% load static %}
+                <script>
+                    const personalityData = {{ dog.personality|safe }};
+                </script>
+                <div class="dog-details-toggle">
+                    <button class="btn-toggle-details" onclick="toggleDetails()">
+                        <span id="toggle-text">상세정보 보기</span>
+                        <span id="toggle-icon">▼</span>
+                    </button>
+                </div>
+                <div class="dog-details" id="dogDetails" style="display: none;">
+                    <div class="detail-item" id="detail-gender"></div>
+                    <div class="detail-item" id="detail-size"></div>
+                    <div class="detail-item" id="detail-weight"></div>
+                    <div class="detail-item" id="detail-neutered"></div>
+                    <div class="detail-item" id="detail-health"></div>
+                    <div class="detail-item" id="detail-personality"></div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- 대화 히스토리 -->
+        <div class="chat-history-section">
+            <div class="history-header">
+                <h4>대화 히스토리</h4>
+                <button class="btn-new-chat" onclick="startNewChat()">+ 새 대화</button>
+            </div>
+            <div class="history-list" id="historyList">
+                <!-- JavaScript로 동적 생성 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 오른쪽: 채팅창 -->
+    <div class="chat-main">
+        <div class="chat-header">
+            <h2>{{ dog.name }}와 대화하기</h2>
+            <span class="chat-subtitle">현재 대화</span>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <!-- 초기 환영 메시지 -->
+            <div class="welcome-message">
+                <div class="welcome-icon">🐾</div>
+                <h3>안녕하세요! 저는 {{ dog.name }}입니다.</h3>
+                <p>무엇이든 물어보세요!</p>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <form id="chatForm" class="chat-input-form">
+                {% csrf_token %}
+                <input type="text" id="messageInput" name="message" 
+                       placeholder="{{ dog.name }}에게 메시지를 보내세요..." 
+                       autocomplete="off" required>
+                <button type="submit" class="btn-send">전송</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const dogId = {{ dog.id }};
+let currentChatHistory = [];
+let chatSessions = JSON.parse(localStorage.getItem(`chat_sessions_${dogId}`) || '[]');
+let currentSessionId = null;
+
+// 페이지 로드 시
+document.addEventListener('DOMContentLoaded', function() {
+    loadChatHistory();
+    loadPersonalityDetails();
+});
+
+// 성격 상세정보 로드
+function loadPersonalityDetails() {
+    try {
+        const personality = JSON.parse('{{ dog.personality|escapejs }}');
+        
+        if (personality.gender) {
+            document.getElementById('detail-gender').innerHTML = 
+                `<strong>성별:</strong> ${personality.gender}`;
+        }
+        if (personality.size) {
+            document.getElementById('detail-size').innerHTML = 
+                `<strong>크기:</strong> ${personality.size}`;
+        }
+        if (personality.weight) {
+            document.getElementById('detail-weight').innerHTML = 
+                `<strong>체중:</strong> ${personality.weight}kg`;
+        }
+        if (personality.neutered) {
+            document.getElementById('detail-neutered').innerHTML = 
+                `<strong>중성화:</strong> ${personality.neutered}`;
+        }
+        if (personality.health_info) {
+            document.getElementById('detail-health').innerHTML = 
+                `<strong>건강:</strong> ${personality.health_info}`;
+        }
+        if (personality.personality) {
+            document.getElementById('detail-personality').innerHTML = 
+                `<strong>성격:</strong> ${personality.personality}`;
+        }
+    } catch (e) {
+        console.log('성격 정보 파싱 실패');
+    }
+}
+
+// 상세정보 토글
+function toggleDetails() {
+    const details = document.getElementById('dogDetails');
+    const icon = document.getElementById('toggle-icon');
+    const text = document.getElementById('toggle-text');
+    
+    if (details.style.display === 'none') {
+        details.style.display = 'block';
+        icon.textContent = '▲';
+        text.textContent = '상세정보 숨기기';
+    } else {
+        details.style.display = 'none';
+        icon.textContent = '▼';
+        text.textContent = '상세정보 보기';
+    }
+}
+
+// 대화 히스토리 로드
+function loadChatHistory() {
+    const historyList = document.getElementById('historyList');
+    historyList.innerHTML = '';
+    
+    if (chatSessions.length === 0) {
+        historyList.innerHTML = '<div class="no-history">대화 히스토리가 없습니다</div>';
+        return;
+    }
+    
+    chatSessions.forEach((session, index) => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        if (session.id === currentSessionId) {
+            historyItem.classList.add('active');
+        }
+        
+        historyItem.innerHTML = `
+            <div class="history-title">${session.title}</div>
+            <div class="history-date">${session.date}</div>
+        `;
+        
+        historyItem.onclick = () => loadSession(session.id);
+        historyList.appendChild(historyItem);
+    });
+}
+
+// 세션 로드
+function loadSession(sessionId) {
+    const session = chatSessions.find(s => s.id === sessionId);
+    if (!session) return;
+    
+    currentSessionId = sessionId;
+    currentChatHistory = session.messages;
+    
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.innerHTML = '';
+    
+    currentChatHistory.forEach(msg => {
+        addMessageToUI(msg.text, msg.isUser, msg.timestamp);
+    });
+    
+    loadChatHistory();
+    scrollToBottom();
+}
+
+// 새 대화 시작
+function startNewChat() {
+    if (currentChatHistory.length > 0) {
+        // 현재 대화 저장
+        saveCurrentSession();
+    }
+    
+    // 새 세션 시작
+    currentSessionId = Date.now().toString();
+    currentChatHistory = [];
+    
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.innerHTML = `
+        <div class="welcome-message">
+            <div class="welcome-icon">🐾</div>
+            <h3>안녕하세요! 저는 {{ dog.name }}입니다.</h3>
+            <p>무엇이든 물어보세요!</p>
+        </div>
+    `;
+    
+    loadChatHistory();
+}
+
+// 현재 세션 저장
+function saveCurrentSession() {
+    if (currentChatHistory.length === 0) return;
+    
+    const existingIndex = chatSessions.findIndex(s => s.id === currentSessionId);
+    const firstMessage = currentChatHistory.find(m => m.isUser);
+    
+    const session = {
+        id: currentSessionId,
+        title: firstMessage ? firstMessage.text.substring(0, 30) + (firstMessage.text.length > 30 ? '...' : '') : '새 대화',
+        date: new Date().toLocaleString('ko-KR', { 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }),
+        messages: currentChatHistory
+    };
+    
+    if (existingIndex >= 0) {
+        chatSessions[existingIndex] = session;
+    } else {
+        chatSessions.unshift(session);
+    }
+    
+    // 최대 20개까지만 저장
+    if (chatSessions.length > 20) {
+        chatSessions = chatSessions.slice(0, 20);
+    }
+    
+    localStorage.setItem(`chat_sessions_${dogId}`, JSON.stringify(chatSessions));
+}
+
+// 자동 스크롤
+function scrollToBottom() {
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// 메시지 전송
+const chatForm = document.getElementById('chatForm');
+const messageInput = document.getElementById('messageInput');
+
+chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const message = messageInput.value.trim();
+    if (!message) return;
+    
+    // 새 세션 시작 (첫 메시지인 경우)
+    if (currentChatHistory.length === 0) {
+        currentSessionId = Date.now().toString();
+    }
+    
+    // 사용자 메시지 추가
+    const userMsg = {
+        text: message,
+        isUser: true,
+        timestamp: new Date().toISOString()
+    };
+    currentChatHistory.push(userMsg);
+    addMessageToUI(message, true);
+    messageInput.value = '';
+    
+    try {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const response = await fetch(`/chat/${dogId}/send/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ message: message })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // AI 응답 추가
+            const aiMsg = {
+                text: data.message,
+                isUser: false,
+                timestamp: new Date().toISOString()
+            };
+            currentChatHistory.push(aiMsg);
+            addMessageToUI(data.message, false);
+            
+            // 세션 저장
+            saveCurrentSession();
+            loadChatHistory();
+        } else {
+            alert('메시지 전송 실패: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('서버 오류가 발생했습니다.');
+    }
+});
+
+// UI에 메시지 추가
+function addMessageToUI(text, isUser, timestamp) {
+    const chatMessages = document.getElementById('chatMessages');
+    
+    // 환영 메시지 제거
+    const welcomeMsg = chatMessages.querySelector('.welcome-message');
+    if (welcomeMsg) {
+        welcomeMsg.remove();
+    }
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+    
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'message-content';
+    contentDiv.textContent = text;
+    
+    const timeDiv = document.createElement('div');
+    timeDiv.className = 'message-time';
+    const time = timestamp ? new Date(timestamp) : new Date();
+    timeDiv.textContent = time.toLocaleString('ko-KR', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    messageDiv.appendChild(contentDiv);
+    messageDiv.appendChild(timeDiv);
+    chatMessages.appendChild(messageDiv);
+    
+    scrollToBottom();
+}
+
+// 페이지 나갈 때 저장
+window.addEventListener('beforeunload', () => {
+    if (currentChatHistory.length > 0) {
+        saveCurrentSession();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,851 @@
+/* 전역 스타일 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+/* 네비게이션 바 */
+.navbar {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.nav-left, .nav-right {
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-center h1 {
+    font-size: 1.5rem;
+    color: #667eea;
+}
+
+.btn-home, .btn-logout, .btn-signup, .btn-login {
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.btn-home {
+    background: #667eea;
+    color: white;
+}
+
+.btn-logout {
+    background: #f56565;
+    color: white;
+}
+
+.btn-signup, .btn-login {
+    background: #48bb78;
+    color: white;
+}
+
+.btn-home:hover, .btn-logout:hover, .btn-signup:hover, .btn-login:hover {
+    opacity: 0.8;
+    transform: translateY(-2px);
+}
+
+/* 메인 컨텐츠 */
+main {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* 메시지 알림 */
+.messages {
+    margin-bottom: 1rem;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+}
+
+.alert-success {
+    background: #c6f6d5;
+    color: #22543d;
+}
+
+.alert-error {
+    background: #fed7d7;
+    color: #742a2a;
+}
+
+/* 인증 페이지 (로그인/회원가입) */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+}
+
+.auth-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-box h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #667eea;
+}
+
+.auth-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.auth-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #555;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 0.75rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.auth-footer a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* 프로필 선택 페이지 */
+.profile-select-container {
+    text-align: center;
+}
+
+.profile-select-container h2 {
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.profile-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.profile-image {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.profile-add .add-icon {
+    background: #48bb78;
+}
+
+.profile-card h3 {
+    margin-bottom: 0.5rem;
+    color: #667eea;
+}
+
+.profile-breed {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* 프로필 생성 페이지 */
+.profile-create-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 2rem 1rem;
+}
+
+.profile-create-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 600px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.profile-create-box h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #667eea;
+}
+
+.profile-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.profile-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #555;
+}
+
+.profile-form input, .profile-form textarea, .profile-form select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.profile-form textarea {
+    resize: vertical;
+}
+
+.profile-form input:focus, .profile-form textarea:focus, .profile-form select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+/* 날짜 입력 그룹 */
+.date-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.date-input-group select {
+    flex: 1;
+}
+
+/* 라디오 버튼 그룹 */
+.radio-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 5px;
+    transition: all 0.3s;
+}
+
+.radio-label:hover {
+    border-color: #667eea;
+    background: #f7fafc;
+}
+
+.radio-label input[type="radio"] {
+    width: auto;
+    margin-right: 0.5rem;
+}
+
+.radio-label input[type="radio"]:checked + span {
+    font-weight: 600;
+    color: #667eea;
+}
+
+.radio-label:has(input[type="radio"]:checked) {
+    border-color: #667eea;
+    background: #eef2ff;
+}
+
+.form-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-secondary {
+    flex: 1;
+    padding: 0.75rem;
+    background: #e2e8f0;
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+    background: #cbd5e0;
+}
+
+/* 채팅 페이지 */
+.chat-container {
+    display: flex;
+    gap: 1rem;
+    height: calc(100vh - 200px);
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.chat-sidebar {
+    width: 300px;
+    background: #f7fafc;
+    padding: 1.5rem;
+    overflow-y: auto;
+    border-right: 2px solid #e2e8f0;
+}
+
+.dog-profile-info {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.dog-avatar {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.dog-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.dog-breed, .dog-age, .dog-personality {
+    color: #666;
+    margin: 0.5rem 0;
+}
+
+.chat-history-title {
+    border-top: 2px solid #e2e8f0;
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+.chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.message {
+    margin-bottom: 1rem;
+    max-width: 70%;
+}
+
+.user-message {
+    margin-left: auto;
+    text-align: right;
+}
+
+.user-message .message-content {
+    background: #667eea;
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 15px 15px 0 15px;
+    display: inline-block;
+}
+
+.ai-message .message-content {
+    background: #e2e8f0;
+    color: #333;
+    padding: 0.75rem 1rem;
+    border-radius: 15px 15px 15px 0;
+    display: inline-block;
+}
+
+.message-time {
+    font-size: 0.75rem;
+    color: #999;
+    margin-top: 0.25rem;
+}
+
+.chat-input-container {
+    padding: 1.5rem;
+    border-top: 2px solid #e2e8f0;
+    background: #f7fafc;
+}
+
+.chat-input-form {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.chat-input-form input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 25px;
+    font-size: 1rem;
+}
+
+.chat-input-form input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn-send {
+    padding: 0.75rem 1.5rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-send:hover {
+    background: #5568d3;
+}
+
+/* 푸터 */
+footer {
+    text-align: center;
+    padding: 2rem;
+    color: white;
+    background: rgba(0,0,0,0.2);
+}
+
+.signup-steps {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+    transition: all 0.3s;
+}
+
+.step-number.active {
+    background: #667eea;
+    color: white;
+}
+
+.step-number.completed {
+    background: #48bb78;
+    color: white;
+}
+
+.step-text {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* 이메일 입력 그룹 */
+.email-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.email-input-group input {
+    flex: 1;
+}
+
+.btn-send-code, .btn-verify-code {
+    padding: 0.75rem 1rem;
+    background: #48bb78;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s;
+}
+
+.btn-send-code:hover, .btn-verify-code:hover {
+    background: #38a169;
+}
+
+.btn-send-code:disabled, .btn-verify-code:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+}
+
+/* 채팅 페이지 개선 CSS - style.css에 추가 또는 교체 */
+
+/* 강아지 프로필 카드 */
+.dog-profile-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.dog-avatar-large {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #667eea;
+}
+
+.dog-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder-large {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.dog-name {
+    text-align: center;
+    color: #667eea;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.dog-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.info-item {
+    background: #f7fafc;
+    padding: 0.75rem;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.info-label {
+    display: block;
+    font-size: 0.8rem;
+    color: #999;
+    margin-bottom: 0.25rem;
+}
+
+.info-value {
+    display: block;
+    font-weight: 600;
+    color: #333;
+}
+
+.dog-details-toggle {
+    margin-bottom: 0.5rem;
+}
+
+.btn-toggle-details {
+    width: 100%;
+    padding: 0.5rem;
+    background: #e2e8f0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.btn-toggle-details:hover {
+    background: #cbd5e0;
+}
+
+.dog-details {
+    padding-top: 0.5rem;
+}
+
+.detail-item {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    background: #f7fafc;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.detail-item:empty {
+    display: none;
+}
+
+.detail-item strong {
+    color: #667eea;
+    margin-right: 0.5rem;
+}
+
+/* 대화 히스토리 섹션 */
+.chat-history-section {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.history-header h4 {
+    color: #333;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.btn-new-chat {
+    padding: 0.5rem 1rem;
+    background: #48bb78;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-new-chat:hover {
+    background: #38a169;
+}
+
+.history-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.history-item {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: #f7fafc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-left: 3px solid transparent;
+}
+
+.history-item:hover {
+    background: #e2e8f0;
+    border-left-color: #667eea;
+}
+
+.history-item.active {
+    background: #eef2ff;
+    border-left-color: #667eea;
+}
+
+.history-title {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.history-date {
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.no-history {
+    text-align: center;
+    padding: 2rem;
+    color: #999;
+    font-size: 0.9rem;
+}
+
+/* 채팅 헤더 */
+.chat-header {
+    padding: 1.5rem;
+    border-bottom: 2px solid #e2e8f0;
+    background: white;
+}
+
+.chat-header h2 {
+    color: #667eea;
+    margin-bottom: 0.25rem;
+}
+
+.chat-subtitle {
+    color: #999;
+    font-size: 0.9rem;
+}
+
+/* 환영 메시지 */
+.welcome-message {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #666;
+}
+
+.welcome-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.welcome-message h3 {
+    color: #667eea;
+    margin-bottom: 0.5rem;
+}
+
+.welcome-message p {
+    color: #999;
+}
+
+/* 스크롤바 스타일 */
+.history-list::-webkit-scrollbar,
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.history-list::-webkit-scrollbar-track,
+.chat-messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.history-list::-webkit-scrollbar-thumb,
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+}
+
+.history-list::-webkit-scrollbar-thumb:hover,
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}프로필 선택{% endblock %}
+
+{% block content %}
+<div class="profile-select-container">
+    <h2>누구와 대화하시겠어요?</h2>
+    
+    <div class="profile-grid">
+        <!-- 강아지 프로필 카드들 -->
+        {% for dog in dogs %}
+        <a href="{% url 'dogs:profile_detail' dog.id %}" class="profile-card">
+            <div class="profile-image">
+                {% if dog.profile_image %}
+                    <img src="{{ dog.profile_image }}" alt="{{ dog.name }}">
+                {% else %}
+                    <div class="profile-placeholder">🐕</div>
+                {% endif %}
+            </div>
+            <h3>{{ dog.name }}</h3>
+            <p class="profile-breed">{{ dog.breed|default:"믹스견" }}</p>
+        </a>
+        {% endfor %}
+
+        <!-- 프로필 추가 버튼 -->
+        <a href="{% url 'dogs:profile_create' %}" class="profile-card profile-add">
+            <div class="profile-image">
+                <div class="profile-placeholder add-icon">➕</div>
+            </div>
+            <h3>프로필 추가</h3>
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}프로필 생성{% endblock %}
+
+{% block content %}
+<div class="profile-create-container">
+    <div class="profile-create-box">
+        <h2>강아지 프로필 생성</h2>
+        
+        <form method="POST" enctype="multipart/form-data" class="profile-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="name">반려견 이름 *</label>
+                <input type="text" id="name" name="name" required 
+                       placeholder="강아지 이름을 입력하세요">
+            </div>
+
+            <div class="form-group">
+                <label>생년월일</label>
+                <div class="date-input-group">
+                    <select id="birth_year" name="birth_year">
+                        <option value="">년</option>
+                        {% for year in year_range %}
+                        <option value="{{ year }}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="birth_month" name="birth_month">
+                        <option value="">월</option>
+                        {% for month in month_range %}
+                        <option value="{{ month }}">{{ month }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="birth_day" name="birth_day">
+                        <option value="">일</option>
+                        {% for day in day_range %}
+                        <option value="{{ day }}">{{ day }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="breed">견종</label>
+                <input type="text" id="breed" name="breed" 
+                       placeholder="예: 골든 리트리버, 믹스견 등">
+            </div>
+
+            <div class="form-group">
+                <label>성별</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="gender" value="수컷" checked>
+                        <span>수컷</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="gender" value="암컷">
+                        <span>암컷</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>반려견 크기</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="size" value="소형견" checked>
+                        <span>소형견</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="size" value="중형견">
+                        <span>중형견</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="size" value="대형견">
+                        <span>대형견</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="weight">체중 (kg)</label>
+                <input type="number" id="weight" name="weight" step="0.1" min="0"
+                       placeholder="예: 5.5">
+            </div>
+
+            <div class="form-group">
+                <label>중성화 여부</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="neutered" value="예" checked>
+                        <span>예</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="neutered" value="아니오">
+                        <span>아니오</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="health_info">기저 질환</label>
+                <input type="text" id="health_info" name="health_info" 
+                       placeholder="예: 없음, 관절염, 알레르기 등">
+            </div>
+
+            <div class="form-group">
+                <label for="medication">복용약</label>
+                <input type="text" id="medication" name="medication" 
+                       placeholder="복용 중인 약이 있다면 입력하세요">
+            </div>
+
+            <div class="form-group">
+                <label for="personality">성격</label>
+                <textarea id="personality" name="personality" rows="4"
+                          placeholder="강아지의 성격을 설명해주세요 (활발함, 온순함, 장난꾸러기 등)"></textarea>
+            </div>
+
+            <div class="form-buttons">
+                <a href="{% url 'dogs:profile_select' %}" class="btn-secondary">취소</a>
+                <button type="submit" class="btn-primary">생성하기</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// 생년월일 선택 옵션 생성
+const currentYear = new Date().getFullYear();
+const yearSelect = document.getElementById('birth_year');
+const monthSelect = document.getElementById('birth_month');
+const daySelect = document.getElementById('birth_day');
+
+// 년도 옵션 (현재 년도부터 20년 전까지)
+for (let year = currentYear; year >= currentYear - 20; year--) {
+    const option = document.createElement('option');
+    option.value = year;
+    option.textContent = year + '년';
+    yearSelect.appendChild(option);
+}
+
+// 월 옵션 (1-12)
+for (let month = 1; month <= 12; month++) {
+    const option = document.createElement('option');
+    option.value = month;
+    option.textContent = month + '월';
+    monthSelect.appendChild(option);
+}
+
+// 일 옵션 (1-31)
+for (let day = 1; day <= 31; day++) {
+    const option = document.createElement('option');
+    option.value = day;
+    option.textContent = day + '일';
+    daySelect.appendChild(option);
+}
+</script>
+{% endblock %}
