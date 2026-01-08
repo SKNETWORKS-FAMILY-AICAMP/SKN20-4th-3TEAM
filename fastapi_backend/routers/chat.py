@@ -49,7 +49,6 @@ def get_current_user(authorization: Optional[str] = Header(None)) -> dict:
 
 class ChatRequest(BaseModel):
     message: str
-    dog_progile: 
 
 class ChatResponse(BaseModel):
     response: str
