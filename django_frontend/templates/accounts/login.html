@@ -24,6 +24,10 @@
             <button type="submit" class="btn-primary">로그인</button>
         </form>
 
+        <div class="auth-links">
+            <a href="{% url 'accounts:password_reset' %}" class="link-password-reset">비밀번호를 잊으셨나요?</a>
+        </div>
+
         <div class="auth-footer">
             <p>계정이 없으신가요? <a href="{% url 'accounts:signup' %}">회원가입</a></p>
         </div>
