@@ -61,18 +61,6 @@ def profile_create_view(request):
         
         token = request.session.get('access_token')
         
-        # 상세 정보를 JSON으로 저장
-        detailed_info = {
-            'birth_date': birth_date,
-            'gender': gender,
-            'size': size,
-            'weight': weight,
-            'neutered': neutered,
-            'health_info': health_info,
-            'medication': medication,
-            'personality': personality
-        }
-        
         try:
             response = requests.post(
                 f'{settings.FASTAPI_BASE_URL}/api/dogs/',
@@ -80,7 +68,14 @@ def profile_create_view(request):
                     'name': name,
                     'breed': breed if breed else '믹스견',
                     'age': age,
-                    'personality': json.dumps(detailed_info, ensure_ascii=False)
+                    'birth_date': birth_date,
+                    'gender': gender,
+                    'size': size,
+                    'weight': weight,
+                    'neutered': neutered,
+                    'health_info': health_info,
+                    'medication': medication,
+                    'personality': personality
                 },
                 headers={'Authorization': f'Bearer {token}'}
             )
@@ -145,18 +140,6 @@ def profile_edit_view(request, dog_id):
             current_year = datetime.now().year
             age = current_year - int(birth_year)
         
-        # 상세 정보를 JSON으로 저장
-        detailed_info = {
-            'birth_date': birth_date,
-            'gender': gender,
-            'size': size,
-            'weight': weight,
-            'neutered': neutered,
-            'health_info': health_info,
-            'medication': medication,
-            'personality': personality
-        }
-        
         try:
             response = requests.put(
                 f'{settings.FASTAPI_BASE_URL}/api/dogs/{dog_id}',
@@ -164,7 +147,14 @@ def profile_edit_view(request, dog_id):
                     'name': name,
                     'breed': breed if breed else '믹스견',
                     'age': age,
-                    'personality': json.dumps(detailed_info, ensure_ascii=False)
+                    'birth_date': birth_date,
+                    'gender': gender,
+                    'size': size,
+                    'weight': weight,
+                    'neutered': neutered,
+                    'health_info': health_info,
+                    'medication': medication,
+                    'personality': personality
                 },
                 headers={'Authorization': f'Bearer {token}'}
             )
@@ -178,13 +168,7 @@ def profile_edit_view(request, dog_id):
             messages.error(request, f'서버 오류: {str(e)}')
     
     # personality JSON 파싱
-    dog_data = {}
-    try:
-        if dog.get('personality'):
-            personality_data = json.loads(dog['personality'])
-            dog_data = personality_data
-    except:
-        pass
+    dog_data = dog
     
     return render(request, 'dogs/profile_edit.html', {
         'dog': dog,

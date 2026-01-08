@@ -30,6 +30,13 @@ class DogProfileCreate(BaseModel):
     name: str
     breed: Optional[str] = None
     age: Optional[int] = None
+    birth_date: Optional[str] = None
+    gender: Optional[str] = None
+    size: Optional[str] = None
+    weight: Optional[str] = None
+    neutered: Optional[str] = None
+    health_info: Optional[str] = None
+    medication: Optional[str] = None
     personality: Optional[str] = None
 
 
@@ -38,6 +45,13 @@ class DogProfileResponse(BaseModel):
     name: str
     breed: Optional[str]
     age: Optional[int]
+    birth_date: Optional[str]
+    gender: Optional[str]
+    size: Optional[str]
+    weight: Optional[str]
+    neutered: Optional[str]
+    health_info: Optional[str]
+    medication: Optional[str]
     personality: Optional[str]
     profile_image: Optional[str]
     owner_id: int

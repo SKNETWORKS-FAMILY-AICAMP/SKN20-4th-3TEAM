@@ -1,0 +1,53 @@
+-- 마이그레이션: DogProfile 테이블 구조 변경
+-- personality 컬럼을 개별 컬럼으로 변경
+
+-- 이 마이그레이션은 수동으로 실행해야 합니다.
+-- 먼저 기존 데이터를 JSON에서 파싱하여 새로운 컬럼들로 마이그레이션합니다.
+
+-- SQLite를 사용하는 경우:
+-- ALTER TABLE dog_profiles ADD COLUMN birth_date TEXT;
+-- ALTER TABLE dog_profiles ADD COLUMN gender TEXT;
+-- ALTER TABLE dog_profiles ADD COLUMN size TEXT;
+-- ALTER TABLE dog_profiles ADD COLUMN weight TEXT;
+-- ALTER TABLE dog_profiles ADD COLUMN neutered TEXT;
+-- ALTER TABLE dog_profiles ADD COLUMN health_info TEXT;
+-- ALTER TABLE dog_profiles ADD COLUMN medication TEXT;
+-- UPDATE dog_profiles SET personality = json_extract(personality, '$.personality') WHERE personality IS NOT NULL;
+
+-- PostgreSQL을 사용하는 경우:
+-- ALTER TABLE dog_profiles ADD COLUMN birth_date VARCHAR;
+-- ALTER TABLE dog_profiles ADD COLUMN gender VARCHAR;
+-- ALTER TABLE dog_profiles ADD COLUMN size VARCHAR;
+-- ALTER TABLE dog_profiles ADD COLUMN weight VARCHAR;
+-- ALTER TABLE dog_profiles ADD COLUMN neutered VARCHAR;
+-- ALTER TABLE dog_profiles ADD COLUMN health_info VARCHAR;
+-- ALTER TABLE dog_profiles ADD COLUMN medication VARCHAR;
+-- UPDATE dog_profiles SET 
+--   birth_date = personality::json->>'birth_date',
+--   gender = personality::json->>'gender',
+--   size = personality::json->>'size',
+--   weight = personality::json->>'weight',
+--   neutered = personality::json->>'neutered',
+--   health_info = personality::json->>'health_info',
+--   medication = personality::json->>'medication',
+--   personality = personality::json->>'personality'
+-- WHERE personality IS NOT NULL;
+
+-- MySQL을 사용하는 경우:
+-- ALTER TABLE dog_profiles ADD COLUMN birth_date VARCHAR(255);
+-- ALTER TABLE dog_profiles ADD COLUMN gender VARCHAR(255);
+-- ALTER TABLE dog_profiles ADD COLUMN size VARCHAR(255);
+-- ALTER TABLE dog_profiles ADD COLUMN weight VARCHAR(255);
+-- ALTER TABLE dog_profiles ADD COLUMN neutered VARCHAR(255);
+-- ALTER TABLE dog_profiles ADD COLUMN health_info VARCHAR(255);
+-- ALTER TABLE dog_profiles ADD COLUMN medication VARCHAR(255);
+-- UPDATE dog_profiles SET 
+--   birth_date = JSON_EXTRACT(personality, '$.birth_date'),
+--   gender = JSON_EXTRACT(personality, '$.gender'),
+--   size = JSON_EXTRACT(personality, '$.size'),
+--   weight = JSON_EXTRACT(personality, '$.weight'),
+--   neutered = JSON_EXTRACT(personality, '$.neutered'),
+--   health_info = JSON_EXTRACT(personality, '$.health_info'),
+--   medication = JSON_EXTRACT(personality, '$.medication'),
+--   personality = JSON_EXTRACT(personality, '$.personality')
+-- WHERE personality IS NOT NULL;

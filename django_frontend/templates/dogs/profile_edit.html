@@ -148,7 +148,6 @@ for (let day = 1; day <= 31; day++) {
     daySelect.appendChild(option);
 }
 
-// 기존 데이터 채우기
 if (dogData.birth_date) {
     const [year, month, day] = dogData.birth_date.split('-');
     yearSelect.value = year;

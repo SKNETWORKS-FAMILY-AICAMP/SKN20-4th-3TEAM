@@ -33,7 +33,7 @@
             {% if dog.personality %}
                 {% load static %}
                 <script>
-                    const personalityData = {{ dog.personality|safe }};
+                    const personalityData = {{ dog_data|safe }};
                 </script>
                 <div class="dog-details-toggle">
                     <button class="btn-toggle-details" onclick="toggleDetails()">
@@ -109,34 +109,34 @@ document.addEventListener('DOMContentLoaded', function() {
 // 성격 상세정보 로드
 function loadPersonalityDetails() {
     try {
-        const personality = JSON.parse('{{ dog.personality|escapejs }}');
+        const dog = {{ dog_data|safe }};
         
-        if (personality.gender) {
+        if (dog.gender) {
             document.getElementById('detail-gender').innerHTML = 
-                `<strong>성별:</strong> ${personality.gender}`;
+                `<strong>성별:</strong> ${dog.gender}`;
         }
-        if (personality.size) {
+        if (dog.size) {
             document.getElementById('detail-size').innerHTML = 
-                `<strong>크기:</strong> ${personality.size}`;
+                `<strong>크기:</strong> ${dog.size}`;
         }
-        if (personality.weight) {
+        if (dog.weight) {
             document.getElementById('detail-weight').innerHTML = 
-                `<strong>체중:</strong> ${personality.weight}kg`;
+                `<strong>체중:</strong> ${dog.weight}kg`;
         }
-        if (personality.neutered) {
+        if (dog.neutered) {
             document.getElementById('detail-neutered').innerHTML = 
-                `<strong>중성화:</strong> ${personality.neutered}`;
+                `<strong>중성화:</strong> ${dog.neutered}`;
         }
-        if (personality.health_info) {
+        if (dog.health_info) {
             document.getElementById('detail-health').innerHTML = 
-                `<strong>건강:</strong> ${personality.health_info}`;
+                `<strong>건강:</strong> ${dog.health_info}`;
         }
-        if (personality.personality) {
+        if (dog.personality) {
             document.getElementById('detail-personality').innerHTML = 
-                `<strong>성격:</strong> ${personality.personality}`;
+                `<strong>성격:</strong> ${dog.personality}`;
         }
     } catch (e) {
-        console.log('성격 정보 파싱 실패');
+        console.log('상세 정보 파싱 실패');
     }
 }
 

@@ -90,6 +90,13 @@ def create_dog_profile(
         name=profile.name,
         breed=profile.breed,
         age=profile.age,
+        birth_date=profile.birth_date,
+        gender=profile.gender,
+        size=profile.size,
+        weight=profile.weight,
+        neutered=profile.neutered,
+        health_info=profile.health_info,
+        medication=profile.medication,
         personality=profile.personality,
         owner_id=user.id  # 현재 사용자의 ID 설정
     )
@@ -167,6 +174,13 @@ def update_dog_profile(
     existing_profile.name = profile.name
     existing_profile.breed = profile.breed
     existing_profile.age = profile.age
+    existing_profile.birth_date = profile.birth_date
+    existing_profile.gender = profile.gender
+    existing_profile.size = profile.size
+    existing_profile.weight = profile.weight
+    existing_profile.neutered = profile.neutered
+    existing_profile.health_info = profile.health_info
+    existing_profile.medication = profile.medication
     existing_profile.personality = profile.personality
     
     db.commit()

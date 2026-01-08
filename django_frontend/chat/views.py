@@ -21,18 +21,9 @@ def chat_room_view(request, dog_id):
         if response.status_code == 200:
             dog = response.json()
             
-            # personality JSON 파싱
-            dog_data = {}
-            try:
-                if dog.get('personality'):
-                    personality_data = json.loads(dog['personality'])
-                    dog_data = personality_data
-            except:
-                pass
-            
             return render(request, 'chat/chat_room.html', {
                 'dog': dog,
-                'dog_data': json.dumps(dog_data, ensure_ascii=False)
+                'dog_data': json.dumps(dog, ensure_ascii=False)
             })
         else:
             messages.error(request, '프로필을 찾을 수 없습니다.')

@@ -26,7 +26,14 @@ class DogProfile(Base):
     name = Column(String, nullable=False)
     breed = Column(String)  # 견종
     age = Column(Integer)
-    personality = Column(Text)  # 성격
+    birth_date = Column(String)  # 생년월일
+    gender = Column(String)  # 성별 (수컷/암컷)
+    size = Column(String)  # 크기 (소형견/중형견/대형견)
+    weight = Column(String)  # 체중
+    neutered = Column(String)  # 중성화 여부 (예/아니오)
+    health_info = Column(String)  # 기저 질환
+    medication = Column(String)  # 복용약
+    personality = Column(String)  # 성격 설명
     profile_image = Column(String)  # 프로필 이미지 경로
     owner_id = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.utcnow)

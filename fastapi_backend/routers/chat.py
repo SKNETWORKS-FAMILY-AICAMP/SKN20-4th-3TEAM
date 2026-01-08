@@ -57,16 +57,16 @@ class ChatResponse(BaseModel):
 
 @router.post("/{dog_id}", response_model=ChatResponse)
 def send_message(
-    dog_id: int,
-    chat_request: ChatRequest,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    dog_id: int, # URL 경로에서 강아지 ID
+    chat_request: ChatRequest, # 요청 본문 (사용자 메시지)
+    db: Session = Depends(get_db), # DB 세션 주입
+    current_user: dict = Depends(get_current_user) # 인증된 사용자 정보
 ):
     """현재 사용자의 강아지와 채팅 메시지 전송"""
-    email = current_user["email"]
+    email = current_user["email"] # 토큰에서 추출한 이메일
     
     # 사용자 찾기
-    user = db.query(User).filter(User.email == email).first()
+    user = db.query(User).filter(User.email == email).first() #DB에서 이메일 조회
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -93,6 +93,7 @@ def send_message(
     )
     db.add(new_message)
     db.commit()
+    
     
     # AI 응답 생성 (임시 - 팀원이 AI 모델 연동)
     ai_response = f"안녕하세요! '{chat_request.message}'에 대한 답변입니다. (AI 응답 구현 필요)"
