@@ -65,7 +65,7 @@ def profile_create_view(request):
                 f'{settings.FASTAPI_BASE_URL}/api/dogs/',
                 json={
                     'name': name,
-                    'breed': breed if breed else '믹스견',
+                    'breed': breed,
                     'age': age,
                     'birth_date': birth_date,
                     'gender': gender,
@@ -142,7 +142,7 @@ def profile_edit_view(request, dog_id):
                 f'{settings.FASTAPI_BASE_URL}/api/dogs/{dog_id}',
                 json={
                     'name': name,
-                    'breed': breed if breed else '믹스견',
+                    'breed': breed,
                     'age': age,
                     'birth_date': birth_date,
                     'gender': gender,
