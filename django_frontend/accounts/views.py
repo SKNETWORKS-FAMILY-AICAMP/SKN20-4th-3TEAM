@@ -197,11 +197,16 @@ def signup_view(request):
 
 def login_view(request):
     """로그인"""
+    # 이미 로그인한 사용자는 리다이렉트
+    if request.user.is_authenticated:
+        return redirect('dogs:profile_select')
+    
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
         
         try:
+            # FastAPI에 로그인 요청
             response = requests.post(
                 f'{settings.FASTAPI_BASE_URL}/api/auth/login',
                 json={
@@ -212,14 +217,17 @@ def login_view(request):
             
             if response.status_code == 200:
                 data = response.json()
+                
+                # JWT 토큰을 세션에 저장
                 request.session['access_token'] = data['access_token']
                 request.session['user_email'] = email
+                request.session.modified = True
                 
+                # Django 사용자 생성/가져오기 (세션 유지용)
                 user, created = User.objects.get_or_create(
                     username=email,
                     defaults={'email': email}
                 )
-                
                 login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 
                 messages.success(request, '로그인 되었습니다.')
@@ -235,11 +243,13 @@ def login_view(request):
 @login_required
 def logout_view(request):
     """로그아웃"""
+    # 세션에서 토큰 제거
     if 'access_token' in request.session:
         del request.session['access_token']
     if 'user_email' in request.session:
         del request.session['user_email']
     
+    # Django 로그아웃
     logout(request)
     messages.success(request, '로그아웃 되었습니다.')
     return redirect('landing')
@@ -441,6 +451,7 @@ def delete_account_view(request):
     email = request.session.get('user_email')
     
     try:
+        # FastAPI에서 계정 삭제
         response = requests.delete(
             f'{settings.FASTAPI_BASE_URL}/api/auth/delete-account/{email}'
         )
@@ -448,8 +459,13 @@ def delete_account_view(request):
     except Exception as e:
         print(f"계정 삭제 오류: {str(e)}")
     
-    request.user.delete()
-    logout(request)
+    # Django 사용자 삭제 및 로그아웃
+    try:
+        user = User.objects.get(username=email)
+        user.delete()
+    except User.DoesNotExist:
+        pass
     
+    logout(request)
     messages.success(request, '계정이 삭제되었습니다.')
     return redirect('landing')
