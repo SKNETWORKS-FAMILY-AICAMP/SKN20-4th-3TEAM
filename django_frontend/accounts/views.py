@@ -83,6 +83,15 @@ def send_verification_email(to_email, verification_code, is_password_reset=False
         return False
 
 
+# ============= 랜딩 페이지 =============
+
+def landing_view(request):
+    """메인 랜딩 페이지"""
+    if request.user.is_authenticated:
+        return redirect('dogs:profile_select')
+    return render(request, 'landing.html')
+
+
 # ============= 회원가입 관련 =============
 
 def send_verification_view(request):
@@ -233,7 +242,7 @@ def logout_view(request):
     
     logout(request)
     messages.success(request, '로그아웃 되었습니다.')
-    return redirect('accounts:login')
+    return redirect('landing')
 
 
 # ============= 비밀번호 재설정 (로그인 전) =============
@@ -340,7 +349,6 @@ def settings_view(request):
     try:
         email = request.session.get('user_email')
         
-        # FastAPI에서 사용자 정보 가져오기
         response = requests.get(
             f'{settings.FASTAPI_BASE_URL}/api/auth/user-info/{email}'
         )
@@ -369,7 +377,6 @@ def update_profile_view(request):
         username = request.POST.get('username')
         email = request.session.get('user_email')
         
-        # FastAPI로 업데이트 요청
         try:
             response = requests.post(
                 f'{settings.FASTAPI_BASE_URL}/api/auth/update-profile',
@@ -380,7 +387,6 @@ def update_profile_view(request):
             )
             
             if response.status_code == 200:
-                # Django User도 업데이트
                 user = User.objects.get(username=email)
                 user.username = username
                 user.save()
@@ -434,7 +440,6 @@ def delete_account_view(request):
     """계정 삭제"""
     email = request.session.get('user_email')
     
-    # FastAPI로 계정 삭제 요청
     try:
         response = requests.delete(
             f'{settings.FASTAPI_BASE_URL}/api/auth/delete-account/{email}'
@@ -443,9 +448,8 @@ def delete_account_view(request):
     except Exception as e:
         print(f"계정 삭제 오류: {str(e)}")
     
-    # Django 사용자 삭제
     request.user.delete()
     logout(request)
     
     messages.success(request, '계정이 삭제되었습니다.')
-    return redirect('accounts:login')
+    return redirect('landing')

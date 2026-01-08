@@ -19,10 +19,17 @@
                 {% endif %}
             </div>
             <div class="nav-center">
-                <h1>🐕 강아지 채팅</h1>
+                {% if user.is_authenticated %}
+                    <!-- 로그인 시: 닉네임 표시 -->
+                    <h1>🐕 반가워요! {{ username }}님</h1>
+                {% else %}
+                    <!-- 로그아웃 시: 기본 문구 -->
+                    <h1>🐕 강아지 채팅</h1>
+                {% endif %}
             </div>
             <div class="nav-right">
                 {% if user.is_authenticated %}
+                    <a href="{% url 'chat:quick_chat' %}" class="btn-quick-chat">⚡ 빠른상담</a>
                     <a href="{% url 'accounts:settings' %}" class="btn-settings">⚙️ 설정</a>
                     <a href="{% url 'accounts:logout' %}" class="btn-logout">로그아웃</a>
                 {% else %}

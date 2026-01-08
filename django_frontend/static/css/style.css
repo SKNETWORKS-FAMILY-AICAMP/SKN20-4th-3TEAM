@@ -184,6 +184,11 @@ main {
     margin: 0 auto;
 }
 
+/* 프로필 카드 래퍼 */
+.profile-card-wrapper {
+    position: relative;
+}
+
 .profile-card {
     background: white;
     padding: 1.5rem;
@@ -192,6 +197,8 @@ main {
     color: #333;
     transition: all 0.3s;
     cursor: pointer;
+    display: block;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .profile-card:hover {
@@ -235,6 +242,73 @@ main {
 .profile-breed {
     color: #666;
     font-size: 0.9rem;
+}
+
+/* 메뉴 버튼 */
+.profile-menu {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+.menu-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: all 0.3s;
+}
+
+.menu-btn:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+/* 드롭다운 메뉴 */
+.menu-dropdown {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    min-width: 160px;
+    display: none;
+    overflow: hidden;
+    z-index: 100;
+}
+
+.menu-dropdown.show {
+    display: block;
+}
+
+.menu-item {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.menu-item:hover {
+    background: #f7fafc;
+}
+
+.menu-item.delete {
+    color: #e53e3e;
+}
+
+.menu-item.delete:hover {
+    background: #fff5f5;
 }
 
 /* 프로필 생성 페이지 */
@@ -515,6 +589,7 @@ footer {
     background: rgba(0,0,0,0.2);
 }
 
+/* 회원가입 단계 */
 .signup-steps {
     display: flex;
     justify-content: center;
@@ -590,8 +665,6 @@ footer {
     background: #cbd5e0;
     cursor: not-allowed;
 }
-
-/* 채팅 페이지 개선 CSS - style.css에 추가 또는 교체 */
 
 /* 강아지 프로필 카드 */
 .dog-profile-card {
@@ -850,9 +923,7 @@ footer {
     background: #a0aec0;
 }
 
-/* 설정 페이지 CSS - style.css에 추가 */
-
-/* 설정 컨테이너 */
+/* 설정 페이지 */
 .settings-container {
     display: flex;
     justify-content: center;
@@ -1025,4 +1096,122 @@ footer {
 
 .link-password-reset:hover {
     text-decoration: underline;
+}
+
+/* 빠른상담 CSS - style.css에 추가 */
+
+/* 빠른상담 버튼 (네비게이션) */
+.btn-quick-chat {
+    padding: 0.5rem 1rem;
+    background: #f6ad55;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.btn-quick-chat:hover {
+    background: #ed8936;
+    transform: translateY(-2px);
+}
+
+/* 빠른상담 컨테이너 */
+.quick-chat-container {
+    display: flex;
+    gap: 1rem;
+    height: calc(100vh - 200px);
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+/* 빠른상담 사이드바 */
+.quick-chat-sidebar {
+    width: 320px;
+    background: #f7fafc;
+    padding: 1.5rem;
+    overflow-y: auto;
+    border-right: 2px solid #e2e8f0;
+}
+
+/* 안내 카드 */
+.quick-chat-info-card {
+    background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    color: white;
+    text-align: center;
+}
+
+.info-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.quick-chat-info-card h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.quick-chat-info-card p {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    opacity: 0.95;
+}
+
+.info-tips {
+    background: rgba(255,255,255,0.2);
+    padding: 1rem;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.info-tips h4 {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.info-tips ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-tips li {
+    padding: 0.3rem 0;
+    font-size: 0.85rem;
+}
+
+.info-tips li:before {
+    content: "• ";
+    margin-right: 0.5rem;
+}
+
+/* 빠른상담 히스토리 섹션 */
+.quick-history-section {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* 빠른상담 메인 */
+.quick-chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.quick-chat-header {
+    padding: 1.5rem;
+    border-bottom: 2px solid #e2e8f0;
+    background: white;
+}
+
+.quick-chat-header h2 {
+    color: #ed8936;
+    margin-bottom: 0.25rem;
 }
