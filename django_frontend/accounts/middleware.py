@@ -2,12 +2,14 @@
 JWT 토큰 기반 세션 인증 미들웨어
 FastAPI에서 발급한 JWT 토큰을 사용하여 Django 세션 유지
 """
+from django.contrib.auth.models import AnonymousUser
 
 
 class JWTAuthMiddleware:
     """
     JWT 토큰이 세션에 있으면 Django @login_required 데코레이터 지원
     Django User 모델 사용 안 함 (순수 JWT 토큰 기반)
+    세션 만료 시 자동 로그아웃 처리
     """
     def __init__(self, get_response):
         self.get_response = get_response
@@ -19,7 +21,12 @@ class JWTAuthMiddleware:
         username = request.session.get('username')
         user_id = request.session.get('user_id')
         
-        if access_token and email:
+        # 세션이 없으면 AnonymousUser로 설정
+        if not access_token or not email:
+            # 세션 데이터 전부 삭제 (세션 만료)
+            request.session.flush()
+            request.user = AnonymousUser()
+        else:
             # 토큰이 유효하면 request.user에 간단한 객체 설정
             # Django의 @login_required와 호환되도록 is_authenticated 추가
             class SimpleUser:

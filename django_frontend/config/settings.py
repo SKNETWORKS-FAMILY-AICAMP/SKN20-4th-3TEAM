@@ -130,3 +130,8 @@ LOGOUT_REDIRECT_URL = 'accounts:login'
 
 # FastAPI 백엔드 URL
 FASTAPI_BASE_URL = 'http://localhost:8001'
+
+# 세션 설정
+# SESSION_COOKIE_AGE = 10  # 초 단위
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # 브라우저 닫으면 세션 만료
+# SESSION_COOKIE_HTTPONLY = True  # JavaScript에서 접근 불가

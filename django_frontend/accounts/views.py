@@ -200,6 +200,10 @@ def login_view(request):
     if request.session.get('access_token'):
         return redirect('dogs:profile_select')
     
+    # 세션 만료 메시지 표시
+    if request.GET.get('session_expired'):
+        messages.warning(request, '세션이 만료되었습니다.')
+    
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -351,15 +355,17 @@ def password_reset_view(request):
 
 # ============= 프로필 설정 (로그인 후) =============
 
-@login_required
 def settings_view(request):
     """설정 페이지"""
+    # 세션 확인
+    if not request.session.get('access_token'):
+        return redirect('accounts:login?session_expired=true')
+    
     try:
         email = request.session.get('email')  # 세션에서 이메일 가져오기
         
         if not email:
-            messages.error(request, '세션이 만료되었습니다. 다시 로그인해주세요.')
-            return redirect('accounts:login')
+            return redirect('accounts:login?session_expired=true')
         
         response = requests.get(
             f'{settings.FASTAPI_BASE_URL}/api/auth/user-info/{email}'
@@ -382,16 +388,18 @@ def settings_view(request):
     return render(request, 'accounts/settings.html', {'user_info': user_info})
 
 
-@login_required
 def update_profile_view(request):
     """프로필 정보 수정"""
+    # 세션 확인
+    if not request.session.get('access_token'):
+        return redirect('accounts:login?session_expired=true')
+    
     if request.method == 'POST':
         username = request.POST.get('username')
         email = request.session.get('email')  # 세션에서 이메일 가져오기
         
         if not email:
-            messages.error(request, '세션이 만료되었습니다. 다시 로그인해주세요.')
-            return redirect('accounts:login')
+            return redirect('accounts:login?session_expired=true')
         
         try:
             response = requests.post(
@@ -413,9 +421,12 @@ def update_profile_view(request):
     return redirect('accounts:settings')
 
 
-@login_required
 def change_password_view(request):
     """비밀번호 변경 (로그인 상태)"""
+    # 세션 확인
+    if not request.session.get('access_token'):
+        return redirect('accounts:login?session_expired=true')
+    
     if request.method == 'POST':
         current_password = request.POST.get('current_password')
         new_password = request.POST.get('new_password')
@@ -428,8 +439,7 @@ def change_password_view(request):
         email = request.session.get('email')
         
         if not email:
-            messages.error(request, '세션이 만료되었습니다. 다시 로그인해주세요.')
-            return redirect('accounts:login')
+            return redirect('accounts:login?session_expired=true')
         
         try:
             response = requests.post(
@@ -451,14 +461,16 @@ def change_password_view(request):
     return redirect('accounts:settings')
 
 
-@login_required
 def delete_account_view(request):
     """계정 삭제"""
+    # 세션 확인
+    if not request.session.get('access_token'):
+        return redirect('accounts:login?session_expired=true')
+    
     email = request.session.get('email')
     
     if not email:
-        messages.error(request, '세션이 만료되었습니다. 다시 로그인해주세요.')
-        return redirect('accounts:login')
+        return redirect('accounts:login?session_expired=true')
     
     try:
         # FastAPI에서 계정 삭제
