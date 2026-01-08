@@ -1,9 +1,7 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.http import JsonResponse
 import requests
 import json
@@ -87,7 +85,8 @@ def send_verification_email(to_email, verification_code, is_password_reset=False
 
 def landing_view(request):
     """메인 랜딩 페이지"""
-    if request.user.is_authenticated:
+    # JWT 토큰이 세션에 있으면 이미 로그인한 상태
+    if request.session.get('access_token'):
         return redirect('dogs:profile_select')
     return render(request, 'landing.html')
 
@@ -198,7 +197,7 @@ def signup_view(request):
 def login_view(request):
     """로그인"""
     # 이미 로그인한 사용자는 리다이렉트
-    if request.user.is_authenticated:
+    if request.session.get('access_token'):
         return redirect('dogs:profile_select')
     
     if request.method == 'POST':
@@ -218,18 +217,11 @@ def login_view(request):
             if response.status_code == 200:
                 data = response.json()
                 
-                # JWT 토큰을 세션에 저장
+                # JWT 토큰을 세션에 저장 (JWT 기반 인증)
                 request.session['access_token'] = data['access_token']
                 request.session['email'] = email
+                request.session['token_type'] = data.get('token_type', 'bearer')
                 request.session.modified = True
-                
-                # Django 사용자 생성/가져오기 (세션 유지용)
-                # email을 기본 키로 사용하여 조회/생성
-                user, created = User.objects.get_or_create(
-                    email=email,
-                    defaults={'email': email}
-                )
-                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 
                 messages.success(request, '로그인 되었습니다.')
                 return redirect('dogs:profile_select')
@@ -244,14 +236,15 @@ def login_view(request):
 @login_required
 def logout_view(request):
     """로그아웃"""
-    # 세션에서 토큰 제거
+    # 세션에서 토큰 및 이메일 제거
     if 'access_token' in request.session:
         del request.session['access_token']
     if 'email' in request.session:
         del request.session['email']
+    if 'token_type' in request.session:
+        del request.session['token_type']
+    request.session.modified = True
     
-    # Django 로그아웃
-    logout(request)
     messages.success(request, '로그아웃 되었습니다.')
     return redirect('landing')
 
@@ -358,7 +351,11 @@ def password_reset_view(request):
 def settings_view(request):
     """설정 페이지"""
     try:
-        email = request.user.email
+        email = request.session.get('email')  # 세션에서 이메일 가져오기
+        
+        if not email:
+            messages.error(request, '세션이 만료되었습니다. 다시 로그인해주세요.')
+            return redirect('accounts:login')
         
         response = requests.get(
             f'{settings.FASTAPI_BASE_URL}/api/auth/user-info/{email}'
@@ -368,14 +365,14 @@ def settings_view(request):
             user_info = response.json()
         else:
             user_info = {
-                'username': request.user.username,
+                'username': '알 수 없음',
                 'email': email
             }
     except Exception as e:
         print(f"사용자 정보 로드 오류: {str(e)}")
         user_info = {
-            'username': request.user.username,
-            'email': request.user.email
+            'username': '알 수 없음',
+            'email': request.session.get('email', '')
         }
     
     return render(request, 'accounts/settings.html', {'user_info': user_info})
@@ -386,7 +383,11 @@ def update_profile_view(request):
     """프로필 정보 수정"""
     if request.method == 'POST':
         username = request.POST.get('username')
-        email = request.user.email
+        email = request.session.get('email')  # 세션에서 이메일 가져오기
+        
+        if not email:
+            messages.error(request, '세션이 만료되었습니다. 다시 로그인해주세요.')
+            return redirect('accounts:login')
         
         try:
             response = requests.post(
@@ -398,18 +399,6 @@ def update_profile_view(request):
             )
             
             if response.status_code == 200:
-                # Django User 업데이트 - email로 조회
-                try:
-                    user = User.objects.get(email=email)
-                    user.username = username
-                    user.save()
-                except User.DoesNotExist:
-                    # User가 없으면 생성
-                    User.objects.create(
-                        email=email,
-                        username=username
-                    )
-                
                 messages.success(request, '프로필이 업데이트되었습니다.')
             else:
                 error_msg = response.json().get('detail', '프로필 업데이트에 실패했습니다.')
@@ -432,7 +421,11 @@ def change_password_view(request):
             messages.error(request, '새 비밀번호가 일치하지 않습니다.')
             return redirect('accounts:settings')
         
-        email = request.user.email
+        email = request.session.get('email')
+        
+        if not email:
+            messages.error(request, '세션이 만료되었습니다. 다시 로그인해주세요.')
+            return redirect('accounts:login')
         
         try:
             response = requests.post(
@@ -457,7 +450,11 @@ def change_password_view(request):
 @login_required
 def delete_account_view(request):
     """계정 삭제"""
-    email = request.user.email
+    email = request.session.get('email')
+    
+    if not email:
+        messages.error(request, '세션이 만료되었습니다. 다시 로그인해주세요.')
+        return redirect('accounts:login')
     
     try:
         # FastAPI에서 계정 삭제
@@ -468,13 +465,14 @@ def delete_account_view(request):
     except Exception as e:
         print(f"계정 삭제 오류: {str(e)}")
     
-    # Django 사용자 삭제 및 로그아웃
-    try:
-        user = User.objects.get(email=email)
-        user.delete()
-    except User.DoesNotExist:
-        pass
+    # 세션 정리
+    if 'access_token' in request.session:
+        del request.session['access_token']
+    if 'email' in request.session:
+        del request.session['email']
+    if 'token_type' in request.session:
+        del request.session['token_type']
+    request.session.modified = True
     
-    logout(request)
     messages.success(request, '계정이 삭제되었습니다.')
     return redirect('landing')
