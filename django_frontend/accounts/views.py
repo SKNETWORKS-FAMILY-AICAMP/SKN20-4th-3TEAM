@@ -220,12 +220,13 @@ def login_view(request):
                 
                 # JWT 토큰을 세션에 저장
                 request.session['access_token'] = data['access_token']
-                request.session['user_email'] = email
+                request.session['email'] = email
                 request.session.modified = True
                 
                 # Django 사용자 생성/가져오기 (세션 유지용)
+                # email을 기본 키로 사용하여 조회/생성
                 user, created = User.objects.get_or_create(
-                    username=email,
+                    email=email,
                     defaults={'email': email}
                 )
                 login(request, user, backend='django.contrib.auth.backends.ModelBackend')
@@ -246,8 +247,8 @@ def logout_view(request):
     # 세션에서 토큰 제거
     if 'access_token' in request.session:
         del request.session['access_token']
-    if 'user_email' in request.session:
-        del request.session['user_email']
+    if 'email' in request.session:
+        del request.session['email']
     
     # Django 로그아웃
     logout(request)
@@ -357,7 +358,7 @@ def password_reset_view(request):
 def settings_view(request):
     """설정 페이지"""
     try:
-        email = request.session.get('user_email')
+        email = request.user.email
         
         response = requests.get(
             f'{settings.FASTAPI_BASE_URL}/api/auth/user-info/{email}'
@@ -385,7 +386,7 @@ def update_profile_view(request):
     """프로필 정보 수정"""
     if request.method == 'POST':
         username = request.POST.get('username')
-        email = request.session.get('user_email')
+        email = request.user.email
         
         try:
             response = requests.post(
@@ -397,9 +398,17 @@ def update_profile_view(request):
             )
             
             if response.status_code == 200:
-                user = User.objects.get(username=email)
-                user.username = username
-                user.save()
+                # Django User 업데이트 - email로 조회
+                try:
+                    user = User.objects.get(email=email)
+                    user.username = username
+                    user.save()
+                except User.DoesNotExist:
+                    # User가 없으면 생성
+                    User.objects.create(
+                        email=email,
+                        username=username
+                    )
                 
                 messages.success(request, '프로필이 업데이트되었습니다.')
             else:
@@ -423,7 +432,7 @@ def change_password_view(request):
             messages.error(request, '새 비밀번호가 일치하지 않습니다.')
             return redirect('accounts:settings')
         
-        email = request.session.get('user_email')
+        email = request.user.email
         
         try:
             response = requests.post(
@@ -448,7 +457,7 @@ def change_password_view(request):
 @login_required
 def delete_account_view(request):
     """계정 삭제"""
-    email = request.session.get('user_email')
+    email = request.user.email
     
     try:
         # FastAPI에서 계정 삭제
@@ -461,7 +470,7 @@ def delete_account_view(request):
     
     # Django 사용자 삭제 및 로그아웃
     try:
-        user = User.objects.get(username=email)
+        user = User.objects.get(email=email)
         user.delete()
     except User.DoesNotExist:
         pass

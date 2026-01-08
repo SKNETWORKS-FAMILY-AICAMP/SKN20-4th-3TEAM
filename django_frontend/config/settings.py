@@ -65,11 +65,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# FastAPI backend의 dog_chat.db를 직접 사용
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR.parent / 'fastapi_backend' / 'dog_chat.db',
     }
 }
 
