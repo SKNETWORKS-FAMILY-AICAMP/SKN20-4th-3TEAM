@@ -17,6 +17,7 @@ class JWTAuthMiddleware:
         access_token = request.session.get('access_token')
         email = request.session.get('email')
         username = request.session.get('username')
+        user_id = request.session.get('user_id')
         
         if access_token and email:
             # 토큰이 유효하면 request.user에 간단한 객체 설정
@@ -24,15 +25,16 @@ class JWTAuthMiddleware:
             class SimpleUser:
                 is_authenticated = True
                 
-                def __init__(self, email, username):
+                def __init__(self, email, username, user_id):
                     self.email = email
+                    self.id = user_id
                     # FastAPI에서 받은 username 사용, 없으면 이메일 앞부분 사용
                     self.username = username if username else email.split('@')[0]
                 
                 def __str__(self):
                     return self.email
             
-            request.user = SimpleUser(email, username)
+            request.user = SimpleUser(email, username, user_id)
         
         response = self.get_response(request)
         return response
