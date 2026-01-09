@@ -63,14 +63,16 @@ def send_message(
         DogProfile.id == dog_id,
         DogProfile.owner_id == current_user.id
     ).first()
-
-    dog_content = build_dog_context(dog) #강아지 프로필 정보
     
+    # 검증을 먼저 수행
     if not dog:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="다른 사용자의 강아지와는 채팅할 수 없습니다."
         )
+
+    # 강아지 프로필 정보 생성
+    dog_content = build_dog_context(dog)
     
 
 
@@ -84,23 +86,21 @@ def send_message(
     
 
 
-    # 사용자 질문 저장
+    # 사용자 질문과 AI 응답을 한 번에 저장 (성능 최적화)
     new_message = ChatMessage(
         dog_id=dog_id,
         message=chat_request.message,
         is_user=True
     )
-    db.add(new_message)
-    db.commit()
-
-    # AI 응답 저장
     ai_message = ChatMessage(
         dog_id=dog_id,
         message=ai_response,
         is_user=False
     )
+    
+    db.add(new_message)
     db.add(ai_message)
-    db.commit()
+    db.commit()  # 1번만 commit (DB I/O 50% 감소)
     
     return {"response": ai_response}
 
@@ -108,15 +108,6 @@ def send_message(
 @router.post("/quick", response_model=ChatResponse)
 def quick_chat(chat_request: ChatRequest, db: Session = Depends(get_db)):
     """빠른상담 메시지 전송"""
-    # 메시지 저장 (dog_profile_id 없이)
-    new_message = ChatMessage(
-        dog_profile_id=None,  # 빠른상담은 프로필 없음
-        message=chat_request.message,
-        is_user=True
-    )
-    db.add(new_message)
-    db.commit()
-    
     # AI 응답 생성 (빠른상담은 강아지 정보 없이)
     try:
         ai_response = run_rag(chat_request.message)
@@ -124,14 +115,21 @@ def quick_chat(chat_request: ChatRequest, db: Session = Depends(get_db)):
         print(f"RAG 파이프라인 실행 중 오류 발생: {e}")
         ai_response = "죄송합니다. 현재 답변을 생성할 수 없습니다. 잠시 후 다시 시도하세요."
     
-    # AI 응답 저장
+    # 메시지와 AI 응답을 한 번에 저장 (성능 최적화)
+    new_message = ChatMessage(
+        dog_profile_id=None,  # 빠른상담은 프로필 없음
+        message=chat_request.message,
+        is_user=True
+    )
     ai_message = ChatMessage(
         dog_profile_id=None,
         message=ai_response,
         is_user=False
     )
+    
+    db.add(new_message)
     db.add(ai_message)
-    db.commit()
+    db.commit()  # 1번만 commit
     
     return {"response": ai_response}
 
