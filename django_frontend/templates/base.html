@@ -50,6 +50,25 @@
         {% endblock %}
     </main>
 
+    <script>
+        // 메시지 자동 사라지기 (3초 후)
+        document.addEventListener('DOMContentLoaded', function() {
+            const messages = document.querySelectorAll('.alert');
+            messages.forEach(function(message) {
+                // 3초 후에 페이드아웃 시작
+                setTimeout(function() {
+                    message.style.transition = 'opacity 0.5s ease';
+                    message.style.opacity = '0';
+
+                    // 페이드아웃 완료 후 DOM에서 제거
+                    setTimeout(function() {
+                        message.remove();
+                    }, 500);
+                }, 3000);
+            });
+        });
+    </script>
+
     {% block extra_js %}
     {% endblock %}
 </body>

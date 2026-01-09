@@ -179,20 +179,84 @@ function scrollToBottom() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
+// 로딩 메시지 추가
+function showQuickLoadingMessage() {
+    const chatMessages = document.getElementById('quickChatMessages');
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'message ai-message loading-message';
+    loadingDiv.id = 'quickLoadingMessage';
+
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'message-content loading-content';
+    contentDiv.innerHTML = `
+        <span class="loading-dot">•</span>
+        <span class="loading-dot">•</span>
+        <span class="loading-dot">•</span>
+    `;
+
+    // CSS 스타일 추가
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .loading-content {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .loading-dot {
+            font-size: 24px;
+            animation: dotPulse 1.4s infinite;
+            opacity: 0.3;
+        }
+        .loading-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+        .loading-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .loading-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes dotPulse {
+            0%, 80%, 100% {
+                opacity: 0.3;
+            }
+            40% {
+                opacity: 1;
+            }
+        }
+    `;
+    if (!document.getElementById('loadingDotStyle')) {
+        style.id = 'loadingDotStyle';
+        document.head.appendChild(style);
+    }
+
+    loadingDiv.appendChild(contentDiv);
+    chatMessages.appendChild(loadingDiv);
+    scrollToBottom();
+}
+
+// 로딩 메시지 제거
+function removeQuickLoadingMessage() {
+    const loadingMsg = document.getElementById('quickLoadingMessage');
+    if (loadingMsg) {
+        loadingMsg.remove();
+    }
+}
+
 // 메시지 전송
 const quickChatForm = document.getElementById('quickChatForm');
 const quickMessageInput = document.getElementById('quickMessageInput');
 
 quickChatForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const message = quickMessageInput.value.trim();
     if (!message) return;
-    
+
     if (currentQuickHistory.length === 0) {
         currentQuickSessionId = Date.now().toString();
     }
-    
+
     const userMsg = {
         text: message,
         isUser: true,
@@ -201,7 +265,10 @@ quickChatForm.addEventListener('submit', async (e) => {
     currentQuickHistory.push(userMsg);
     addQuickMessageToUI(message, true);
     quickMessageInput.value = '';
-    
+
+    // 로딩 애니메이션 시작
+    showQuickLoadingMessage();
+
     try {
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         const response = await fetch('/chat/quick/send/', {
@@ -212,9 +279,12 @@ quickChatForm.addEventListener('submit', async (e) => {
             },
             body: JSON.stringify({ message: message })
         });
-        
+
         const data = await response.json();
-        
+
+        // 로딩 메시지 제거
+        removeQuickLoadingMessage();
+
         if (data.success) {
             const aiMsg = {
                 text: data.message,
@@ -223,7 +293,7 @@ quickChatForm.addEventListener('submit', async (e) => {
             };
             currentQuickHistory.push(aiMsg);
             addQuickMessageToUI(data.message, false);
-            
+
             saveCurrentQuickSession();
             loadQuickChatHistory();
         } else {
@@ -231,6 +301,7 @@ quickChatForm.addEventListener('submit', async (e) => {
         }
     } catch (error) {
         console.error('Error:', error);
+        removeQuickLoadingMessage();
         alert('서버 오류가 발생했습니다.');
     }
 });

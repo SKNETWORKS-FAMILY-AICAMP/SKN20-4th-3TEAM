@@ -48,10 +48,10 @@ class ChatMessage(Base):
     __tablename__ = "chat_messages"
 
     id = Column(Integer, primary_key=True, index=True)
-    dog_id = Column(Integer, ForeignKey("dog_profiles.id"), index=True)  # 인덱스 추가 (히스토리 조회 성능 향상)
+    dog_id = Column(Integer, ForeignKey("dog_profiles.id"), index=True, nullable=True)  # 빠른상담은 dog_id가 NULL
     message = Column(Text, nullable=False)
     is_user = Column(Integer, default=1)  # 1: 사용자, 0: AI
     created_at = Column(DateTime, default=datetime.utcnow, index=True)  # 인덱스 추가 (시간순 정렬 성능 향상)
-    
+
     # 관계 설정
     dog = relationship("DogProfile", back_populates="chat_messages")
