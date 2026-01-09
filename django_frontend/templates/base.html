@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}강아지 채팅{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- ⭐ 캐시 무시를 위한 버전 파라미터 추가 -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3">
 </head>
 <body>
     <header>
