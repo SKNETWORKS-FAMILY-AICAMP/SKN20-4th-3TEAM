@@ -35,7 +35,7 @@ class DogProfile(Base):
     medication = Column(String)  # 복용약
     personality = Column(String)  # 성격 설명
     profile_image = Column(String)  # 프로필 이미지 경로
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner_id = Column(Integer, ForeignKey("users.id"), index=True)  # 인덱스 추가 (쿼리 성능 향상)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # 관계 설정
@@ -48,10 +48,10 @@ class ChatMessage(Base):
     __tablename__ = "chat_messages"
 
     id = Column(Integer, primary_key=True, index=True)
-    dog_id = Column(Integer, ForeignKey("dog_profiles.id"))
+    dog_id = Column(Integer, ForeignKey("dog_profiles.id"), index=True)  # 인덱스 추가 (히스토리 조회 성능 향상)
     message = Column(Text, nullable=False)
     is_user = Column(Integer, default=1)  # 1: 사용자, 0: AI
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)  # 인덱스 추가 (시간순 정렬 성능 향상)
     
     # 관계 설정
     dog = relationship("DogProfile", back_populates="chat_messages")

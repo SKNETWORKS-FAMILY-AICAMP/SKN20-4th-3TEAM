@@ -116,7 +116,7 @@ def create_dog_profile(
     
     db.add(new_profile)
     db.commit()
-    db.refresh(new_profile)
+    # refresh() 제거 - 불필요한 DB 재조회 방지
     
     return new_profile
 

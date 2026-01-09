@@ -222,3 +222,4 @@ def delete_account(email: str, db: Session = Depends(get_db)):
     db.commit()
     
     return {"message": "계정이 삭제되었습니다."}
+
