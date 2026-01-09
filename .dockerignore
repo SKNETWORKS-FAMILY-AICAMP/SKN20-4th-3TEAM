@@ -27,6 +27,11 @@ ENV/
 *.sqlite3
 *.sqlite
 
+# 데이터 폴더 (벡터 DB는 볼륨으로 마운트)
+data/
+*/data/
+**/data/
+
 # 로그 파일
 *.log
 

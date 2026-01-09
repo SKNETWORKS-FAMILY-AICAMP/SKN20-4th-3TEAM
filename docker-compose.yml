@@ -4,8 +4,8 @@ services:
   # FastAPI 백엔드 서비스
   fastapi:
     build:
-      context: .
-      dockerfile: ./fastapi_backend/Dockerfile
+      context: ./fastapi_backend
+      dockerfile: Dockerfile
     container_name: dog-chat-fastapi
     ports:
       - "8001:8001"
@@ -27,8 +27,8 @@ services:
   # Django 프론트엔드 서비스
   django:
     build:
-      context: .
-      dockerfile: ./django_frontend/Dockerfile
+      context: ./django_frontend
+      dockerfile: Dockerfile
     container_name: dog-chat-django
     ports:
       - "8000:8000"

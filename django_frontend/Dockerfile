@@ -8,7 +8,8 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
 # requirements.txt 복사 및 의존성 설치
 COPY requirements.txt .
@@ -16,7 +17,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 # 애플리케이션 코드 복사
-COPY ./django_frontend .
+COPY . .
 
 # 환경 변수 설정
 ENV PYTHONUNBUFFERED=1 \
@@ -30,7 +31,7 @@ EXPOSE 8000
 RUN python manage.py collectstatic --noinput || true
 
 # Django 마이그레이션 및 서버 실행 스크립트
-COPY ./django_frontend/entrypoint.sh /entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # 헬스체크

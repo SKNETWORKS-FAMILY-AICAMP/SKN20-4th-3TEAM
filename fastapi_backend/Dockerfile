@@ -8,15 +8,18 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
 # requirements.txt 복사 및 의존성 설치
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# 애플리케이션 코드 복사
-COPY ./fastapi_backend .
+# 애플리케이션 코드만 복사
+COPY *.py .
+COPY routers ./routers
+COPY src ./src
 
 # 환경 변수 설정
 ENV PYTHONUNBUFFERED=1 \
