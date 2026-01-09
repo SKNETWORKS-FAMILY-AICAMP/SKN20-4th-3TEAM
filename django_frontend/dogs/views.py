@@ -188,8 +188,13 @@ def profile_edit_view(request, dog_id):
         except Exception as e:
             messages.error(request, f'서버 오류: {str(e)}')
     
+    # dog 객체를 JSON으로 변환하여 JavaScript에서 사용할 수 있도록 함
+    # personality 속성은 제거되었으므로 포함되지 않음
+    dog_data = json.dumps(dog)
+    
     return render(request, 'dogs/profile_edit.html', {
-        'dog': dog
+        'dog': dog,
+        'dog_data': dog_data
     })
 
 
