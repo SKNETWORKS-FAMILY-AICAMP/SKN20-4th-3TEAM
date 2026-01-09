@@ -46,6 +46,9 @@ vectorstore = Chroma(
 persist_directory=r"..\data\ChromaDB_bge_m3", #DB 저장한 경로
 collection_name="pet_health_qa_system_bge_m3",
 embedding_function=embeddings)
+
+#벡터스토어 내 문서 개수 확인
+print(f"벡터스토어 내 문서 개수: {vectorstore._collection.count()}")
 print("벡터스토어가 성공적으로 로드되었습니다!")
 
 

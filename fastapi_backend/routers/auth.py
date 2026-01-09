@@ -222,10 +222,3 @@ def delete_account(email: str, db: Session = Depends(get_db)):
     db.commit()
     
     return {"message": "계정이 삭제되었습니다."}
-
-
-@router.get("/me", response_model=UserResponse)
-def get_current_user():
-    """현재 로그인한 사용자 정보 조회"""
-    # TODO: 팀원이 JWT 인증 구현
-    return {"message": "JWT 인증 구현 필요"}
