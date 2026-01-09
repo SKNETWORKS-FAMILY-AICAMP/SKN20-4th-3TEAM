@@ -78,17 +78,6 @@ def profile_create_view(request):
             current_year = datetime.now().year
             age = current_year - int(birth_year)
         
-        # ⭐ 상세 정보를 JSON으로 저장 (성격 제외)
-        detailed_info = {
-            'birth_date': birth_date,
-            'gender': gender,
-            'size': size,
-            'weight': weight,
-            'neutered': neutered,
-            'health_info': health_info,
-            'medication': medication
-        }
-        
         try:
             response = requests.post(
                 f'{settings.FASTAPI_BASE_URL}/api/dogs/',
@@ -96,7 +85,13 @@ def profile_create_view(request):
                     'name': name,
                     'breed': breed if breed else '믹스견',
                     'age': age,
-                    'personality': json.dumps(detailed_info, ensure_ascii=False)
+                    'birth_date': birth_date,
+                    'gender': gender,
+                    'size': size,
+                    'weight': weight,
+                    'neutered': neutered,
+                    'health_info': health_info,
+                    'medication': medication
                 },
                 headers={'Authorization': f'Bearer {token}'}
             )
@@ -164,17 +159,6 @@ def profile_edit_view(request, dog_id):
             current_year = datetime.now().year
             age = current_year - int(birth_year)
         
-        # ⭐ 상세 정보를 JSON으로 저장 (성격 제외)
-        detailed_info = {
-            'birth_date': birth_date,
-            'gender': gender,
-            'size': size,
-            'weight': weight,
-            'neutered': neutered,
-            'health_info': health_info,
-            'medication': medication
-        }
-        
         try:
             response = requests.put(
                 f'{settings.FASTAPI_BASE_URL}/api/dogs/{dog_id}',
@@ -182,7 +166,13 @@ def profile_edit_view(request, dog_id):
                     'name': name,
                     'breed': breed if breed else '믹스견',
                     'age': age,
-                    'personality': json.dumps(detailed_info, ensure_ascii=False)
+                    'birth_date': birth_date,
+                    'gender': gender,
+                    'size': size,
+                    'weight': weight,
+                    'neutered': neutered,
+                    'health_info': health_info,
+                    'medication': medication
                 },
                 headers={'Authorization': f'Bearer {token}'}
             )
@@ -198,18 +188,13 @@ def profile_edit_view(request, dog_id):
         except Exception as e:
             messages.error(request, f'서버 오류: {str(e)}')
     
-    # personality JSON 파싱
-    dog_data = {}
-    try:
-        if dog.get('personality'):
-            personality_data = json.loads(dog['personality'])
-            dog_data = personality_data
-    except:
-        pass
+    # dog 객체를 JSON으로 변환하여 JavaScript에서 사용할 수 있도록 함
+    # personality 속성은 제거되었으므로 포함되지 않음
+    dog_data = json.dumps(dog)
     
     return render(request, 'dogs/profile_edit.html', {
         'dog': dog,
-        'dog_data': json.dumps(dog_data, ensure_ascii=False)
+        'dog_data': dog_data
     })
 
 

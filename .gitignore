@@ -1,4 +1,5 @@
 /data
+fastapi_backend/data
 __pycache__/
 .env
 

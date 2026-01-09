@@ -42,8 +42,12 @@ embeddings = HuggingFaceEmbeddings(
     encode_kwargs={'normalize_embeddings': True}  # bge-m3는 정규화 권장
 )
 
+# 환경 변수에서 벡터스토어 경로 읽기
+chroma_persist_dir = os.getenv("CHROMA_PERSIST_DIRECTORY", "../data/ChromaDB_bge_m3")
+print(f"벡터스토어 경로: {chroma_persist_dir}")
+
 vectorstore = Chroma( 
-persist_directory=r"..\data\ChromaDB_bge_m3", #DB 저장한 경로
+persist_directory=chroma_persist_dir,  # 환경 변수로 관리되는 경로
 collection_name="pet_health_qa_system_bge_m3",
 embedding_function=embeddings)
 
