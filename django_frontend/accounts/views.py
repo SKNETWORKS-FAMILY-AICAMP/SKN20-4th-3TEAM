@@ -19,9 +19,7 @@ SMTP_PORT = 587
 SENDER_EMAIL = "beauty1balance@gmail.com"  # ⚠️ Gmail 주소 입력
 SENDER_PASSWORD = "slte ovyk rejy hzuv"  # ⚠️ 새 앱 비밀번호 입력
 
-# 인증번호 임시 저장
-verification_codes = {}
-password_reset_codes = {}
+# 인증번호는 세션에 저장 (전역 딕셔너리 제거 - 서버 재시작 및 세션 문제 해결)
 
 
 def generate_verification_code():
@@ -125,8 +123,16 @@ def send_verification_view(request):
             code = generate_verification_code()
             
             if send_verification_email(email, code, is_password_reset=False):
-                verification_codes[email] = code
-                print(f"🔑 인증번호 저장: {email} -> {code}")
+                # 세션이 없으면 생성 (첫 방문자 문제 해결)
+                if not request.session.session_key:
+                    request.session.create()
+                
+                # 세션에 인증번호 저장
+                request.session[f'verification_code_{email}'] = code
+                request.session.modified = True
+                request.session.save()  # 명시적으로 저장
+                
+                print(f"🔑 인증번호 세션 저장: {email} -> {code} (session_key: {request.session.session_key})")
                 return JsonResponse({'success': True, 'message': '인증번호가 발송되었습니다.'})
             else:
                 return JsonResponse({'success': False, 'message': '이메일 발송에 실패했습니다.'})
@@ -146,8 +152,16 @@ def verify_code_view(request):
             email = data.get('email')
             code = data.get('code')
             
-            if email in verification_codes and verification_codes[email] == code:
-                del verification_codes[email]
+            # 세션에서 인증번호 조회
+            session_key = f'verification_code_{email}'
+            saved_code = request.session.get(session_key)
+            
+            print(f"🔍 인증번호 확인: {email}, 입력={code}, 저장={saved_code}")
+            
+            if saved_code and saved_code == code:
+                # 인증 성공 시 세션에서 제거
+                del request.session[session_key]
+                request.session.modified = True
                 return JsonResponse({'success': True, 'message': '인증이 완료되었습니다.'})
             else:
                 return JsonResponse({'success': False, 'message': '인증번호가 일치하지 않습니다.'})
@@ -290,7 +304,15 @@ def send_password_reset_view(request):
             code = generate_verification_code()
             
             if send_verification_email(email, code, is_password_reset=True):
-                password_reset_codes[email] = code
+                # 세션이 없으면 생성
+                if not request.session.session_key:
+                    request.session.create()
+                
+                # 세션에 인증번호 저장
+                request.session[f'password_reset_code_{email}'] = code
+                request.session.modified = True
+                request.session.save()
+                
                 print(f"🔑 비밀번호 재설정 인증번호: {email} -> {code}")
                 return JsonResponse({'success': True, 'message': '인증번호가 발송되었습니다.'})
             else:
@@ -310,8 +332,14 @@ def verify_reset_code_view(request):
             email = data.get('email')
             code = data.get('code')
             
-            if email in password_reset_codes and password_reset_codes[email] == code:
-                del password_reset_codes[email]
+            # 세션에서 인증번호 조회
+            session_key = f'password_reset_code_{email}'
+            saved_code = request.session.get(session_key)
+            
+            if saved_code and saved_code == code:
+                # 인증 성공 시 세션에서 제거
+                del request.session[session_key]
+                request.session.modified = True
                 return JsonResponse({'success': True, 'message': '인증이 완료되었습니다.'})
             else:
                 return JsonResponse({'success': False, 'message': '인증번호가 일치하지 않습니다.'})
