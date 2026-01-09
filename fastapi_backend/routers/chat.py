@@ -47,7 +47,33 @@ def build_dog_context(dog) -> str:
 
     return "강아지 프로필\n" + "\n".join(parts)
 
-
+@router.post("/quick", response_model=ChatResponse)
+def quick_chat(chat_request: ChatRequest, db: Session = Depends(get_db)):
+    """빠른상담 메시지 전송"""
+    # AI 응답 생성 (빠른상담은 강아지 정보 없이)
+    try:
+        ai_response = run_rag(chat_request.message)
+    except Exception as e:
+        print(f"RAG 파이프라인 실행 중 오류 발생: {e}")
+        ai_response = "죄송합니다. 현재 답변을 생성할 수 없습니다. 잠시 후 다시 시도하세요."
+    
+    # 메시지와 AI 응답을 한 번에 저장 (성능 최적화)
+    new_message = ChatMessage(
+        dog_id=None,  # 빠른상담은 프로필 없음
+        message=chat_request.message,
+        is_user=True
+    )
+    ai_message = ChatMessage(
+        dog_id=None,
+        message=ai_response,
+        is_user=False
+    )
+    
+    db.add(new_message)
+    db.add(ai_message)
+    db.commit()  # 1번만 commit
+    
+    return {"response": ai_response}
 
 @router.post("/{dog_id}", response_model=ChatResponse)
 def send_message(
@@ -105,33 +131,6 @@ def send_message(
     return {"response": ai_response}
 
 
-@router.post("/quick", response_model=ChatResponse)
-def quick_chat(chat_request: ChatRequest, db: Session = Depends(get_db)):
-    """빠른상담 메시지 전송"""
-    # AI 응답 생성 (빠른상담은 강아지 정보 없이)
-    try:
-        ai_response = run_rag(chat_request.message)
-    except Exception as e:
-        print(f"RAG 파이프라인 실행 중 오류 발생: {e}")
-        ai_response = "죄송합니다. 현재 답변을 생성할 수 없습니다. 잠시 후 다시 시도하세요."
-    
-    # 메시지와 AI 응답을 한 번에 저장 (성능 최적화)
-    new_message = ChatMessage(
-        dog_profile_id=None,  # 빠른상담은 프로필 없음
-        message=chat_request.message,
-        is_user=True
-    )
-    ai_message = ChatMessage(
-        dog_profile_id=None,
-        message=ai_response,
-        is_user=False
-    )
-    
-    db.add(new_message)
-    db.add(ai_message)
-    db.commit()  # 1번만 commit
-    
-    return {"response": ai_response}
 
 
 @router.get("/{dog_id}/history")
