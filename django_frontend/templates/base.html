@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}강아지 채팅{% endblock %}</title>
     <!-- ⭐ 캐시 무시를 위한 버전 파라미터 추가 -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=7">
 </head>
 <body>
     <header>
@@ -55,15 +55,16 @@
         document.addEventListener('DOMContentLoaded', function() {
             const messages = document.querySelectorAll('.alert');
             messages.forEach(function(message) {
-                // 3초 후에 페이드아웃 시작
+                // 3초 후에 슬라이드 업 & 페이드아웃 시작
                 setTimeout(function() {
-                    message.style.transition = 'opacity 0.5s ease';
+                    message.style.transition = 'all 0.4s ease';
                     message.style.opacity = '0';
+                    message.style.transform = 'translateY(-20px)';
 
-                    // 페이드아웃 완료 후 DOM에서 제거
+                    // 애니메이션 완료 후 DOM에서 제거
                     setTimeout(function() {
                         message.remove();
-                    }, 500);
+                    }, 400);
                 }, 3000);
             });
         });
