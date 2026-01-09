@@ -52,6 +52,8 @@ def get_rag_prompt():
 
 """),
         ("human", """
+{dog_info}
+
 문맥: {context}
 
 사용자 질문: {question}

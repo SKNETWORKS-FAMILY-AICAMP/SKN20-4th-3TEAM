@@ -76,7 +76,6 @@ def send_message(
 
     # RAG 파이프라인 실행 - 응답 생성
     try: 
-        from src.pipeline import run_rag
         ai_response = run_rag(chat_request.message, dog_content) #사용자의 질문과 강아지 프로필을 함께 rag에 전달
 
     except Exception as e:
@@ -118,8 +117,12 @@ def quick_chat(chat_request: ChatRequest, db: Session = Depends(get_db)):
     db.add(new_message)
     db.commit()
     
-    # AI 응답 생성 (임시 - 팀원이 AI 모델 연동)
-    ai_response = f"빠른상담: '{chat_request.message}'에 대한 일반적인 답변입니다. (AI 응답 구현 필요)"
+    # AI 응답 생성 (빠른상담은 강아지 정보 없이)
+    try:
+        ai_response = run_rag(chat_request.message)
+    except Exception as e:
+        print(f"RAG 파이프라인 실행 중 오류 발생: {e}")
+        ai_response = "죄송합니다. 현재 답변을 생성할 수 없습니다. 잠시 후 다시 시도하세요."
     
     # AI 응답 저장
     ai_message = ChatMessage(

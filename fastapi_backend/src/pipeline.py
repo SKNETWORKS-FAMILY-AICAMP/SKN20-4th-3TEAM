@@ -62,9 +62,16 @@ rag_pipeline = RunnableParallel(
 ) | get_rag_prompt() | llm | StrOutputParser()
 
 
-'''
+
     
-def process_with_self_check(question_text):
+def process_with_self_check(input_data):
+    # input_data가 dict이면 question과 dog_info 추출, 아니면 question만
+    if isinstance(input_data, dict):
+        question_text = input_data.get('question', input_data.get('input', ''))
+        dog_info = input_data.get('dog_info', '')
+    else:
+        question_text = input_data
+        dog_info = ''
 
     # 1. 질문 재작성
     rewrite_chain = get_rewrite_prompt() | llm | StrOutputParser()
@@ -81,18 +88,30 @@ def process_with_self_check(question_text):
     
     return {
         "question": rewritten_question,
-        "context": context
+        "context": context,
+        "dog_info": dog_info
     }
     
 rag_pipeline = RunnableLambda(process_with_self_check) | get_rag_prompt() | llm | StrOutputParser()
-    
 
-'''
+
 # fastapi에서 사용할 RAG 파이프라인 함수
-def run_rag(question: str) -> str:
-    return rag_pipeline.invoke(question)
-
-'''
+def run_rag(question: str, dog_info: str = None) -> str:
+    """
+    RAG 파이프라인 실행
+    
+    Args:
+        question: 사용자 질문
+        dog_info: 강아지 프로필 정보 (선택사항)
+    
+    Returns:
+        AI 응답 문자열
+    """
+    if dog_info:
+        return rag_pipeline.invoke({"question": question, "dog_info": dog_info})
+    else:
+        # 강아지 정보가 없으면 빈 문자열로 처리
+        return rag_pipeline.invoke({"question": question, "dog_info": ""})
 
 #테스트 코드 
 
@@ -104,4 +123,3 @@ for q in query:
     response = rag_pipeline.invoke(q)
     print("질문:", q)
     print("답변:", response)
-'''
