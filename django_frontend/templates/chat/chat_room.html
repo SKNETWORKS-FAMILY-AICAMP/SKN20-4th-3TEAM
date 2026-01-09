@@ -33,7 +33,7 @@
             {% if dog.personality %}
                 {% load static %}
                 <script>
-                    const personalityData = {{ dog_data|safe }};
+                    const personalityData = {{ dog.personality|safe }};
                 </script>
                 <div class="dog-details-toggle">
                     <button class="btn-toggle-details" onclick="toggleDetails()">
@@ -47,7 +47,7 @@
                     <div class="detail-item" id="detail-weight"></div>
                     <div class="detail-item" id="detail-neutered"></div>
                     <div class="detail-item" id="detail-health"></div>
-                    <div class="detail-item" id="detail-personality"></div>
+                    <!-- ⭐ 성격 필드 제거됨 -->
                 </div>
             {% endif %}
         </div>
@@ -106,37 +106,34 @@ document.addEventListener('DOMContentLoaded', function() {
     loadPersonalityDetails();
 });
 
-// 성격 상세정보 로드
+// ⭐ 성격 상세정보 로드 (성격 필드 제거됨)
 function loadPersonalityDetails() {
     try {
-        const dog = {{ dog_data|safe }};
+        const personality = JSON.parse('{{ dog.personality|escapejs }}');
         
-        if (dog.gender) {
+        if (personality.gender) {
             document.getElementById('detail-gender').innerHTML = 
-                `<strong>성별:</strong> ${dog.gender}`;
+                `<strong>성별:</strong> ${personality.gender}`;
         }
-        if (dog.size) {
+        if (personality.size) {
             document.getElementById('detail-size').innerHTML = 
-                `<strong>크기:</strong> ${dog.size}`;
+                `<strong>크기:</strong> ${personality.size}`;
         }
-        if (dog.weight) {
+        if (personality.weight) {
             document.getElementById('detail-weight').innerHTML = 
-                `<strong>체중:</strong> ${dog.weight}kg`;
+                `<strong>체중:</strong> ${personality.weight}kg`;
         }
-        if (dog.neutered) {
+        if (personality.neutered) {
             document.getElementById('detail-neutered').innerHTML = 
-                `<strong>중성화:</strong> ${dog.neutered}`;
+                `<strong>중성화:</strong> ${personality.neutered}`;
         }
-        if (dog.health_info) {
+        if (personality.health_info) {
             document.getElementById('detail-health').innerHTML = 
-                `<strong>건강:</strong> ${dog.health_info}`;
+                `<strong>건강:</strong> ${personality.health_info}`;
         }
-        if (dog.personality) {
-            document.getElementById('detail-personality').innerHTML = 
-                `<strong>성격:</strong> ${dog.personality}`;
-        }
+        // ⭐ 성격 필드는 제거되었으므로 관련 코드 삭제됨
     } catch (e) {
-        console.log('상세 정보 파싱 실패');
+        console.log('성격 정보 파싱 실패');
     }
 }
 
