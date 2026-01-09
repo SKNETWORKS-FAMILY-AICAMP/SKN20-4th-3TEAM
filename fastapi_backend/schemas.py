@@ -37,7 +37,6 @@ class DogProfileCreate(BaseModel):
     neutered: Optional[str] = None
     health_info: Optional[str] = None
     medication: Optional[str] = None
-    personality: Optional[str] = None
 
 
 class DogProfileResponse(BaseModel):
@@ -52,7 +51,6 @@ class DogProfileResponse(BaseModel):
     neutered: Optional[str]
     health_info: Optional[str]
     medication: Optional[str]
-    personality: Optional[str]
     profile_image: Optional[str]
     owner_id: int
     created_at: datetime

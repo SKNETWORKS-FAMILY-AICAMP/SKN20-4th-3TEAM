@@ -33,7 +33,6 @@ class DogProfile(Base):
     neutered = Column(String)  # 중성화 여부 (예/아니오)
     health_info = Column(String)  # 기저 질환
     medication = Column(String)  # 복용약
-    personality = Column(String)  # 성격 설명
     profile_image = Column(String)  # 프로필 이미지 경로
     owner_id = Column(Integer, ForeignKey("users.id"), index=True)  # 인덱스 추가 (쿼리 성능 향상)
     created_at = Column(DateTime, default=datetime.utcnow)
