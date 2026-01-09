@@ -11,9 +11,9 @@ from langchain_core.runnables import RunnableParallel, RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_openai import OpenAIEmbeddings
-from ensemble import EnsembleRetriever
-from prompt import get_rewrite_prompt, get_rag_prompt, self_check_prompt # 프롬포트 불러오기
-from utils import format_docs, get_retriever, self_check_retriver, initialize_rag_system, filter_docs_by_response #유틸리티 함수 불러오기
+from .ensemble import EnsembleRetriever
+from .prompt import get_rewrite_prompt, get_rag_prompt, self_check_prompt # 프롬포트 불러오기
+from .utils import format_docs, get_retriever, self_check_retriver, initialize_rag_system, filter_docs_by_response #유틸리티 함수 불러오기
 load_dotenv()
 
 
@@ -55,6 +55,14 @@ retriever = get_retriever(vectorstore, k_D=5, k_B=5)
 # LLM 정의
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
+# RAG 파이프라인
+rag_pipeline = RunnableParallel(
+    question=get_rewrite_prompt() | llm | StrOutputParser(),
+    context=RunnableLambda(lambda x: format_docs(retriever.invoke(x)))
+) | get_rag_prompt() | llm | StrOutputParser()
+
+
+'''
     
 def process_with_self_check(question_text):
 
@@ -79,9 +87,12 @@ def process_with_self_check(question_text):
 rag_pipeline = RunnableLambda(process_with_self_check) | get_rag_prompt() | llm | StrOutputParser()
     
 
+'''
+# fastapi에서 사용할 RAG 파이프라인 함수
 def run_rag(question: str) -> str:
     return rag_pipeline.invoke(question)
 
+'''
 
 #테스트 코드 
 
@@ -93,3 +104,4 @@ for q in query:
     response = rag_pipeline.invoke(q)
     print("질문:", q)
     print("답변:", response)
+'''

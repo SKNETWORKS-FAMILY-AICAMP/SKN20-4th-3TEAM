@@ -5,6 +5,7 @@ from models import ChatMessage, DogProfile, User
 from pydantic import BaseModel
 from typing import List
 from auth_utils import get_current_user
+from src.pipeline import run_rag  # 팀원이 구현한 RAG 파이프라인 함수 임포트
 
 router = APIRouter()
 
@@ -16,6 +17,38 @@ class ChatResponse(BaseModel):
     response: str
 
 
+def build_dog_context(dog) -> str:
+    """
+    LLM에 넣을 '짧고 구조화된' 강아지 프로필을 만든다.
+    (dog: DogProfile 객체)
+    """
+
+    disease = getattr(dog, "disease", None) # 없으면 None
+    medication = getattr(dog, "medication", None)
+    weight = getattr(dog, "weight", None)
+    gender = getattr(dog, "gender", None)
+    neutered = getattr(dog, "neutered", None)
+
+    parts = [
+        f"- 이름: {dog.name}",
+        f"- 나이: {dog.age}세",
+        f"- 종: {dog.breed}",
+    ]
+    if weight is not None:
+        parts.append(f"- 체중: {weight}kg")
+    if gender is not None:
+        parts.append(f"- 성별: {gender}")
+    if neutered is not None:
+        parts.append(f"- 중성화 여부: {neutered}")
+    if disease:
+        parts.append(f"- 기저질환: {disease}")
+    if medication:
+        parts.append(f"- 복용약: {medication}")
+
+    return "강아지 프로필\n" + "\n".join(parts)
+
+
+
 @router.post("/{dog_id}", response_model=ChatResponse)
 def send_message(
     dog_id: int,
@@ -24,11 +57,14 @@ def send_message(
     db: Session = Depends(get_db)
 ):
     """현재 사용자의 강아지와 채팅 메시지 전송"""
-    # 해당 강아지가 현재 사용자의 것인지 확인
+
+    # DB에서 현재 사용자가 선택한 강아지 정보 조회
     dog = db.query(DogProfile).filter(
         DogProfile.id == dog_id,
         DogProfile.owner_id == current_user.id
     ).first()
+
+    dog_content = build_dog_context(dog) #강아지 프로필 정보
     
     if not dog:
         raise HTTPException(
@@ -36,7 +72,20 @@ def send_message(
             detail="다른 사용자의 강아지와는 채팅할 수 없습니다."
         )
     
-    # 메시지 저장
+
+
+    # RAG 파이프라인 실행 - 응답 생성
+    try: 
+        from src.pipeline import run_rag
+        ai_response = run_rag(chat_request.message, dog_content) #사용자의 질문과 강아지 프로필을 함께 rag에 전달
+
+    except Exception as e:
+        print(f"RAG 파이프라인 실행 중 오류 발생: {e}")
+        ai_response = "죄송합니다. 현재 답변을 생성할 수 없습니다. 잠시 후 다시 시도하세요."
+    
+
+
+    # 사용자 질문 저장
     new_message = ChatMessage(
         dog_id=dog_id,
         message=chat_request.message,
@@ -44,10 +93,7 @@ def send_message(
     )
     db.add(new_message)
     db.commit()
-    
-    # AI 응답 생성 (임시 - 팀원이 AI 모델 연동)
-    ai_response = f"안녕하세요! '{chat_request.message}'에 대한 답변입니다. (AI 응답 구현 필요)"
-    
+
     # AI 응답 저장
     ai_message = ChatMessage(
         dog_id=dog_id,
