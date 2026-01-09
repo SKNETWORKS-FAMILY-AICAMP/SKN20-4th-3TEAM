@@ -13,10 +13,10 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.documents import Document
 from langchain_community.retrievers import BM25Retriever
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from ensemble import EnsembleRetriever #커스텀 앙상블 리트리버 
+from .ensemble import EnsembleRetriever #커스텀 앙상블 리트리버 
 from langchain_openai import ChatOpenAI
 from langchain_community.vectorstores import Chroma
-from prompt import self_check_prompt # 프롬포트 불러오기
+from .prompt import self_check_prompt # 프롬포트 불러오기
 
 import os
 from dotenv import load_dotenv
