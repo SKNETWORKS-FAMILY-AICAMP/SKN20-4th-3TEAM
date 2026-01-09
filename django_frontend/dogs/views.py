@@ -31,6 +31,25 @@ def profile_select_view(request):
 @login_required
 def profile_create_view(request):
     """강아지 프로필 생성 화면"""
+    token = request.session.get('access_token')
+    
+    # GET 요청 시 프로필 개수 확인
+    if request.method == 'GET':
+        try:
+            response = requests.get(
+                f'{settings.FASTAPI_BASE_URL}/api/dogs/',
+                headers={'Authorization': f'Bearer {token}'}
+            )
+            
+            if response.status_code == 200:
+                dogs = response.json()
+                if len(dogs) >= 10:
+                    messages.warning(request, '프로필은 최대 10개까지만 생성할 수 있습니다.')
+                    return redirect('dogs:profile_select')
+        except:
+            pass
+    
+    # POST 요청 시 프로필 생성
     if request.method == 'POST':
         name = request.POST.get('name')
         breed = request.POST.get('breed')
@@ -50,6 +69,7 @@ def profile_create_view(request):
         neutered = request.POST.get('neutered')
         health_info = request.POST.get('health_info')
         medication = request.POST.get('medication')
+        # ⭐ 성격 필드 제거됨
         
         # 나이 계산
         age = None
@@ -58,22 +78,25 @@ def profile_create_view(request):
             current_year = datetime.now().year
             age = current_year - int(birth_year)
         
-        token = request.session.get('access_token')
+        # ⭐ 상세 정보를 JSON으로 저장 (성격 제외)
+        detailed_info = {
+            'birth_date': birth_date,
+            'gender': gender,
+            'size': size,
+            'weight': weight,
+            'neutered': neutered,
+            'health_info': health_info,
+            'medication': medication
+        }
         
         try:
             response = requests.post(
                 f'{settings.FASTAPI_BASE_URL}/api/dogs/',
                 json={
                     'name': name,
-                    'breed': breed,
+                    'breed': breed if breed else '믹스견',
                     'age': age,
-                    'birth_date': birth_date,
-                    'gender': gender,
-                    'size': size,
-                    'weight': weight,
-                    'neutered': neutered,
-                    'health_info': health_info,
-                    'medication': medication,
+                    'personality': json.dumps(detailed_info, ensure_ascii=False)
                 },
                 headers={'Authorization': f'Bearer {token}'}
             )
@@ -81,6 +104,9 @@ def profile_create_view(request):
             if response.status_code == 201:
                 messages.success(request, f'{name} 프로필이 생성되었습니다!')
                 return redirect('dogs:profile_select')
+            elif response.status_code == 400:
+                error_data = response.json()
+                messages.error(request, error_data.get('detail', '프로필 생성에 실패했습니다.'))
             else:
                 messages.error(request, '프로필 생성에 실패했습니다.')
         except Exception as e:
@@ -129,6 +155,7 @@ def profile_edit_view(request, dog_id):
         neutered = request.POST.get('neutered')
         health_info = request.POST.get('health_info')
         medication = request.POST.get('medication')
+        # ⭐ 성격 필드 제거됨
         
         # 나이 계산
         age = None
@@ -137,20 +164,25 @@ def profile_edit_view(request, dog_id):
             current_year = datetime.now().year
             age = current_year - int(birth_year)
         
+        # ⭐ 상세 정보를 JSON으로 저장 (성격 제외)
+        detailed_info = {
+            'birth_date': birth_date,
+            'gender': gender,
+            'size': size,
+            'weight': weight,
+            'neutered': neutered,
+            'health_info': health_info,
+            'medication': medication
+        }
+        
         try:
             response = requests.put(
                 f'{settings.FASTAPI_BASE_URL}/api/dogs/{dog_id}',
                 json={
                     'name': name,
-                    'breed': breed,
+                    'breed': breed if breed else '믹스견',
                     'age': age,
-                    'birth_date': birth_date,
-                    'gender': gender,
-                    'size': size,
-                    'weight': weight,
-                    'neutered': neutered,
-                    'health_info': health_info,
-                    'medication': medication,
+                    'personality': json.dumps(detailed_info, ensure_ascii=False)
                 },
                 headers={'Authorization': f'Bearer {token}'}
             )
@@ -158,13 +190,22 @@ def profile_edit_view(request, dog_id):
             if response.status_code == 200:
                 messages.success(request, f'{name} 프로필이 수정되었습니다!')
                 return redirect('dogs:profile_select')
+            elif response.status_code == 400:
+                error_data = response.json()
+                messages.error(request, error_data.get('detail', '프로필 수정에 실패했습니다.'))
             else:
                 messages.error(request, '프로필 수정에 실패했습니다.')
         except Exception as e:
             messages.error(request, f'서버 오류: {str(e)}')
     
     # personality JSON 파싱
-    dog_data = dog
+    dog_data = {}
+    try:
+        if dog.get('personality'):
+            personality_data = json.loads(dog['personality'])
+            dog_data = personality_data
+    except:
+        pass
     
     return render(request, 'dogs/profile_edit.html', {
         'dog': dog,

@@ -21,21 +21,12 @@
                 <div class="date-input-group">
                     <select id="birth_year" name="birth_year">
                         <option value="">년</option>
-                        {% for year in year_range %}
-                        <option value="{{ year }}">{{ year }}</option>
-                        {% endfor %}
                     </select>
                     <select id="birth_month" name="birth_month">
                         <option value="">월</option>
-                        {% for month in month_range %}
-                        <option value="{{ month }}">{{ month }}</option>
-                        {% endfor %}
                     </select>
                     <select id="birth_day" name="birth_day">
                         <option value="">일</option>
-                        {% for day in day_range %}
-                        <option value="{{ day }}">{{ day }}</option>
-                        {% endfor %}
                     </select>
                 </div>
             </div>
@@ -84,6 +75,7 @@
                        placeholder="예: 5.5">
             </div>
 
+            <!-- ⭐ 중성화 여부에 "모름" 추가됨 -->
             <div class="form-group">
                 <label>중성화 여부</label>
                 <div class="radio-group">
@@ -94,6 +86,10 @@
                     <label class="radio-label">
                         <input type="radio" name="neutered" value="아니오">
                         <span>아니오</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="neutered" value="모름">
+                        <span>모름</span>
                     </label>
                 </div>
             </div>
@@ -110,11 +106,7 @@
                        placeholder="복용 중인 약이 있다면 입력하세요">
             </div>
 
-            <div class="form-group">
-                <label for="personality">성격</label>
-                <textarea id="personality" name="personality" rows="4"
-                          placeholder="강아지의 성격을 설명해주세요 (활발함, 온순함, 장난꾸러기 등)"></textarea>
-            </div>
+            <!-- ⭐ 성격 입력 필드 제거됨 -->
 
             <div class="form-buttons">
                 <a href="{% url 'dogs:profile_select' %}" class="btn-secondary">취소</a>
