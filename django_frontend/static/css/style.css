@@ -1055,16 +1055,158 @@ main {
    ======================================== */
 
 .settings-container {
-    max-width: 800px;
-    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 75vh;
     padding: 2rem 0;
 }
 
-.settings-container h2 {
-    color: var(--blue-primary);
+.settings-box {
+    background: var(--surface);
+    padding: 3rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 600px;
+    border: 1px solid var(--border-medium);
+}
+
+.settings-box h2 {
+    text-align: center;
     margin-bottom: 2rem;
+    color: var(--blue-primary);
     font-size: 2rem;
     font-weight: 700;
+}
+
+.settings-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--border-light);
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 0.875rem 1.5rem;
+    background: transparent;
+    color: var(--text-secondary);
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.tab-btn:hover {
+    color: var(--blue-primary);
+    background: var(--blue-light-5);
+}
+
+.tab-btn.active {
+    color: var(--blue-primary);
+    border-bottom-color: var(--blue-primary);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content h3 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.settings-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.settings-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.settings-form input[type="text"],
+.settings-form input[type="email"],
+.settings-form input[type="password"] {
+    width: 100%;
+    padding: 0.875rem;
+    border: 2px solid var(--border-medium);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    background: var(--card-bg);
+}
+
+.settings-form input:focus {
+    outline: none;
+    border-color: var(--blue-primary);
+    box-shadow: 0 0 0 3px var(--blue-light-5);
+}
+
+.settings-form input:disabled {
+    background: var(--border-light);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.form-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.danger-zone {
+    margin-top: 2.5rem;
+    padding: 1.5rem;
+    background: #FFF5F5;
+    border: 2px solid #FFE6E6;
+    border-radius: 12px;
+}
+
+.danger-zone h4 {
+    color: #CC0000;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.danger-zone p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.btn-danger {
+    padding: 0.875rem 1.5rem;
+    background: transparent;
+    color: #CC0000;
+    border: 2px solid #CC0000;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+}
+
+.btn-danger:hover {
+    background: #CC0000;
+    color: var(--text-white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .settings-section {
@@ -1146,6 +1288,147 @@ main {
 .btn-delete-account:hover {
     background: #CC0000;
     color: var(--text-white);
+}
+
+/* ========================================
+   프로필 생성/수정 페이지
+   ======================================== */
+
+.profile-create-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 75vh;
+    padding: 2rem 0;
+}
+
+.profile-create-box {
+    background: var(--surface);
+    padding: 3rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 600px;
+    border: 1px solid var(--border-medium);
+}
+
+.profile-create-box h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--blue-primary);
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.profile-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.profile-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.profile-form input[type="text"],
+.profile-form input[type="email"],
+.profile-form input[type="number"],
+.profile-form select {
+    width: 100%;
+    padding: 0.875rem;
+    border: 2px solid var(--border-medium);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    background: var(--card-bg);
+}
+
+.profile-form input:focus,
+.profile-form select:focus {
+    outline: none;
+    border-color: var(--blue-primary);
+    box-shadow: 0 0 0 3px var(--blue-light-5);
+}
+
+.date-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.date-input-group select {
+    flex: 1;
+}
+
+.radio-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border: 2px solid var(--border-medium);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: var(--card-bg);
+    font-weight: 500;
+}
+
+.radio-label:hover {
+    border-color: var(--blue-light-3);
+    background: var(--blue-light-5);
+}
+
+.radio-label input[type="radio"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+.radio-label input[type="radio"]:checked + span {
+    color: var(--blue-primary);
+    font-weight: 700;
+}
+
+.radio-label:has(input[type="radio"]:checked) {
+    border-color: var(--blue-primary);
+    background: var(--blue-light-5);
+}
+
+.form-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-secondary {
+    flex: 1;
+    padding: 1rem 2rem;
+    background: var(--border-medium);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1rem;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-secondary:hover {
+    background: var(--blue-light-3);
+    transform: translateY(-2px);
+}
+
+.form-buttons .btn-primary {
+    flex: 1;
 }
 
 /* ========================================
