@@ -116,7 +116,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # 정적 파일 캐시 버스팅 버전 (템플릿에서 {{ STATIC_VERSION }} 으로 사용 가능)
-STATIC_VERSION = '10'
+STATIC_VERSION = '11'
 
 # Media files (사용자 업로드 파일)
 MEDIA_URL = 'media/'

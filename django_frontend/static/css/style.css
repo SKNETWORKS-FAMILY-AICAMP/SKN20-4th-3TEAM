@@ -858,10 +858,12 @@ main {
     padding: 1.5rem 2rem;
     background: var(--blue-primary);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     min-height: 140px;
     box-shadow: var(--shadow-md);
+    gap: 0.5rem;
 }
 
 .chat-header h2 {
@@ -1537,6 +1539,7 @@ main {
 /* 빠른채팅 헤더 스타일 */
 .quick-chat-header {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 1.5rem 2rem;
@@ -1544,6 +1547,7 @@ main {
     color: white;
     min-height: 140px;
     box-shadow: var(--shadow-md);
+    gap: 0.5rem;
 }
 
 .quick-chat-header h2 {
@@ -1552,6 +1556,12 @@ main {
     font-weight: 800 !important;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 0 !important;
+}
+
+.quick-chat-header .chat-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 /* 빠른채팅 히스토리 삭제 버튼 */

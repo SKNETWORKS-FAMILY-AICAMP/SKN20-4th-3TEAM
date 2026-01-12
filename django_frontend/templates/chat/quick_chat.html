@@ -31,14 +31,15 @@
     <!-- 오른쪽: 채팅창 -->
     <div class="quick-chat-main">
         <div class="quick-chat-header">
-            <h2>🐶 빠른상담</h2>
+            <h2>AI 수의사와 대화하기</h2>
+            <span class="chat-subtitle">현재 대화</span>
         </div>
 
         <div class="chat-messages" id="quickChatMessages">
             <!-- 초기 환영 메시지 -->
             <div class="welcome-message">
-                <div class="welcome-icon">🐶</div>
-                <h3>안녕하세요 DR. 멍이 해결해 드립니다.</h3>
+                <div class="welcome-icon">🐾🐾</div>
+                <h3>안녕하세요! AI 수의사입니다.</h3>
                 <p>궁금한 점이 있으시면 무엇이든 물어보세요!</p>
             </div>
         </div>
@@ -47,7 +48,7 @@
             <form id="quickChatForm" class="chat-input-form">
                 {% csrf_token %}
                 <input type="text" id="quickMessageInput" name="message"
-                       placeholder="강아지에 관해 궁금한 점을 물어보세요..."
+                       placeholder="AI 수의사에게 메시지를 보내세요"
                        autocomplete="off" required>
                 <button type="submit" class="btn-send">전송</button>
             </form>
@@ -178,8 +179,8 @@ async function deleteQuickSession(sessionId, event) {
                 const chatMessages = document.getElementById('quickChatMessages');
                 chatMessages.innerHTML = `
                     <div class="welcome-message">
-                        <div class="welcome-icon">🐶</div>
-                        <h3>안녕하세요 DR. 멍이 해결해 드립니다.</h3>
+                        <div class="welcome-icon">🐾🐾</div>
+                        <h3>안녕하세요! AI 수의사입니다.</h3>
                         <p>궁금한 점이 있으시면 무엇이든 물어보세요!</p>
                     </div>
                 `;
