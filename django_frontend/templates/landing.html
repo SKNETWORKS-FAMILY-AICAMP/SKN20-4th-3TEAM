@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>강아지 채팅 - AI 수의사가 24시간 상담해드립니다</title>
-    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+    <!-- ⭐ 캐시 무시를 위한 버전 파라미터 (settings.py의 STATIC_VERSION 사용) -->
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}?v={{ STATIC_VERSION }}">
 </head>
 <body>
     <div class="landing-container">
