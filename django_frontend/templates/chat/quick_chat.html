@@ -31,7 +31,7 @@
     <!-- 오른쪽: 채팅창 -->
     <div class="quick-chat-main">
         <div class="quick-chat-header">
-            <h2>AI 수의사와 대화하기</h2>
+            <h2>Dr. 멍🐶 과 대화하기</h2>
             <span class="chat-subtitle">현재 대화</span>
         </div>
 
@@ -39,7 +39,7 @@
             <!-- 초기 환영 메시지 -->
             <div class="welcome-message">
                 <div class="welcome-icon">🐾🐾</div>
-                <h3>안녕하세요! AI 수의사입니다.</h3>
+                <h3>안녕하세요! Dr. 멍🐶 입니다.</h3>
                 <p>궁금한 점이 있으시면 무엇이든 물어보세요!</p>
             </div>
         </div>
@@ -48,7 +48,7 @@
             <form id="quickChatForm" class="chat-input-form">
                 {% csrf_token %}
                 <input type="text" id="quickMessageInput" name="message"
-                       placeholder="AI 수의사에게 메시지를 보내세요"
+                       placeholder="Dr. 멍🐶 에게 메시지를 보내세요"
                        autocomplete="off" required>
                 <button type="submit" class="btn-send">전송</button>
             </form>
@@ -180,7 +180,7 @@ async function deleteQuickSession(sessionId, event) {
                 chatMessages.innerHTML = `
                     <div class="welcome-message">
                         <div class="welcome-icon">🐾🐾</div>
-                        <h3>안녕하세요! AI 수의사입니다.</h3>
+                        <h3>안녕하세요! Dr. 멍🐶 입니다.</h3>
                         <p>궁금한 점이 있으시면 무엇이든 물어보세요!</p>
                     </div>
                 `;
