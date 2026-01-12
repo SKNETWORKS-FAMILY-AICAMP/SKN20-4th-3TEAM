@@ -56,6 +56,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'config.context_processors.static_version',  # STATIC_VERSION을 모든 템플릿에서 사용 가능하게
             ],
         },
     },
@@ -114,6 +115,9 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# 정적 파일 캐시 버스팅 버전 (템플릿에서 {{ STATIC_VERSION }} 으로 사용 가능)
+STATIC_VERSION = '12'
+
 # Media files (사용자 업로드 파일)
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -130,6 +134,9 @@ LOGOUT_REDIRECT_URL = 'accounts:login'
 
 # FastAPI 백엔드 URL
 FASTAPI_BASE_URL = 'http://localhost:8001'
+
+# HTTP 요청 타임아웃 설정 (초)
+REQUEST_TIMEOUT = 30  # FastAPI 요청 타임아웃
 
 # 세션 설정
 # SESSION_COOKIE_AGE = 10  # 초 단위

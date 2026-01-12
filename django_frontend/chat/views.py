@@ -5,6 +5,7 @@ from django.conf import settings
 from django.http import JsonResponse
 import requests
 import json
+from accounts.http_utils import FastAPIClient
 
 
 @login_required
@@ -13,7 +14,7 @@ def chat_room_view(request, dog_id):
     token = request.session.get('access_token')
     
     try:
-        response = requests.get(
+        response = FastAPIClient.get(
             f'{settings.FASTAPI_BASE_URL}/api/dogs/{dog_id}',
             headers={'Authorization': f'Bearer {token}'}
         )
@@ -45,7 +46,7 @@ def send_message_view(request, dog_id):
             token = request.session.get('access_token')
 
             # FastAPI로 메시지 전송
-            response = requests.post(
+            response = FastAPIClient.post(
                 f'{settings.FASTAPI_BASE_URL}/api/chat/{dog_id}',
                 json={'message': message, 'session_id': session_id},
                 headers={'Authorization': f'Bearer {token}'}
@@ -89,7 +90,7 @@ def quick_chat_send_view(request):
             token = request.session.get('access_token')
 
             # FastAPI로 메시지 전송
-            response = requests.post(
+            response = FastAPIClient.post(
                 f'{settings.FASTAPI_BASE_URL}/api/chat/quick',
                 json={'message': message, 'session_id': session_id},
                 headers={'Authorization': f'Bearer {token}'}
@@ -121,7 +122,7 @@ def quick_chat_history_view(request):
     token = request.session.get('access_token')
 
     try:
-        response = requests.get(
+        response = FastAPIClient.get(
             f'{settings.FASTAPI_BASE_URL}/api/chat/quick/history',
             headers={'Authorization': f'Bearer {token}'}
         )
@@ -146,7 +147,7 @@ def quick_chat_sessions_view(request):
     token = request.session.get('access_token')
 
     try:
-        response = requests.get(
+        response = FastAPIClient.get(
             f'{settings.FASTAPI_BASE_URL}/api/chat/quick/sessions',
             headers={'Authorization': f'Bearer {token}'}
         )
@@ -171,7 +172,7 @@ def quick_chat_session_messages_view(request, session_id):
     token = request.session.get('access_token')
 
     try:
-        response = requests.get(
+        response = FastAPIClient.get(
             f'{settings.FASTAPI_BASE_URL}/api/chat/quick/sessions/{session_id}/messages',
             headers={'Authorization': f'Bearer {token}'}
         )
@@ -197,7 +198,7 @@ def quick_chat_session_delete_view(request, session_id):
         token = request.session.get('access_token')
 
         try:
-            response = requests.delete(
+            response = FastAPIClient.delete(
                 f'{settings.FASTAPI_BASE_URL}/api/chat/quick/sessions/{session_id}',
                 headers={'Authorization': f'Bearer {token}'}
             )
@@ -225,7 +226,7 @@ def quick_chat_history_delete_view(request):
         token = request.session.get('access_token')
 
         try:
-            response = requests.delete(
+            response = FastAPIClient.delete(
                 f'{settings.FASTAPI_BASE_URL}/api/chat/quick/history',
                 headers={'Authorization': f'Bearer {token}'}
             )
@@ -252,7 +253,7 @@ def chat_sessions_view(request, dog_id):
     token = request.session.get('access_token')
 
     try:
-        response = requests.get(
+        response = FastAPIClient.get(
             f'{settings.FASTAPI_BASE_URL}/api/chat/{dog_id}/sessions',
             headers={'Authorization': f'Bearer {token}'}
         )
@@ -277,7 +278,7 @@ def chat_session_messages_view(request, dog_id, session_id):
     token = request.session.get('access_token')
 
     try:
-        response = requests.get(
+        response = FastAPIClient.get(
             f'{settings.FASTAPI_BASE_URL}/api/chat/{dog_id}/sessions/{session_id}/messages',
             headers={'Authorization': f'Bearer {token}'}
         )
@@ -303,7 +304,7 @@ def chat_session_delete_view(request, dog_id, session_id):
         token = request.session.get('access_token')
 
         try:
-            response = requests.delete(
+            response = FastAPIClient.delete(
                 f'{settings.FASTAPI_BASE_URL}/api/chat/{dog_id}/sessions/{session_id}',
                 headers={'Authorization': f'Bearer {token}'}
             )
@@ -331,7 +332,7 @@ def chat_history_delete_view(request, dog_id):
         token = request.session.get('access_token')
 
         try:
-            response = requests.delete(
+            response = FastAPIClient.delete(
                 f'{settings.FASTAPI_BASE_URL}/api/chat/{dog_id}/history',
                 headers={'Authorization': f'Bearer {token}'}
             )

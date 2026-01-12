@@ -5,6 +5,7 @@ from django.conf import settings
 from django.http import JsonResponse
 import requests
 import json
+from .http_utils import FastAPIClient
 
 # 이메일 발송
 import smtplib
@@ -104,7 +105,7 @@ def send_verification_view(request):
                 return JsonResponse({'success': False, 'message': '이메일을 입력해주세요.'})
             
             try:
-                check_response = requests.get(
+                check_response = FastAPIClient.get(
                     f'{settings.FASTAPI_BASE_URL}/api/auth/check-email/{email}'
                 )
                 
@@ -171,7 +172,7 @@ def signup_view(request):
             return render(request, 'accounts/signup.html')
         
         try:
-            response = requests.post(
+            response = FastAPIClient.post(
                 f'{settings.FASTAPI_BASE_URL}/api/auth/signup',
                 json={
                     'email': email,
@@ -210,7 +211,7 @@ def login_view(request):
         
         try:
             # FastAPI에 로그인 요청
-            response = requests.post(
+            response = FastAPIClient.post(
                 f'{settings.FASTAPI_BASE_URL}/api/auth/login',
                 json={
                     'email': email,
@@ -270,7 +271,7 @@ def send_password_reset_view(request):
                 return JsonResponse({'success': False, 'message': '이메일을 입력해주세요.'})
             
             try:
-                check_response = requests.get(
+                check_response = FastAPIClient.get(
                     f'{settings.FASTAPI_BASE_URL}/api/auth/check-email/{email}'
                 )
                 
@@ -334,7 +335,7 @@ def password_reset_view(request):
             return render(request, 'accounts/password_reset.html')
         
         try:
-            response = requests.post(
+            response = FastAPIClient.post(
                 f'{settings.FASTAPI_BASE_URL}/api/auth/reset-password',
                 json={
                     'email': email,
@@ -367,7 +368,7 @@ def settings_view(request):
         if not email:
             return redirect('accounts:login?session_expired=true')
         
-        response = requests.get(
+        response = FastAPIClient.get(
             f'{settings.FASTAPI_BASE_URL}/api/auth/user-info/{email}'
         )
         
@@ -402,7 +403,7 @@ def update_profile_view(request):
             return redirect('accounts:login?session_expired=true')
         
         try:
-            response = requests.post(
+            response = FastAPIClient.post(
                 f'{settings.FASTAPI_BASE_URL}/api/auth/update-profile',
                 json={
                     'email': email,
@@ -442,7 +443,7 @@ def change_password_view(request):
             return redirect('accounts:login?session_expired=true')
         
         try:
-            response = requests.post(
+            response = FastAPIClient.post(
                 f'{settings.FASTAPI_BASE_URL}/api/auth/change-password',
                 json={
                     'email': email,
@@ -474,7 +475,7 @@ def delete_account_view(request):
     
     try:
         # FastAPI에서 계정 삭제
-        response = requests.delete(
+        response = FastAPIClient.delete(
             f'{settings.FASTAPI_BASE_URL}/api/auth/delete-account/{email}'
         )
         print(f"계정 삭제 응답: {response.status_code}")

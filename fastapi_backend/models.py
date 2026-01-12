@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Index
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from database import Base
@@ -53,6 +53,13 @@ class ChatMessage(Base):
     message = Column(Text, nullable=False)
     is_user = Column(Integer, default=1)  # 1: 사용자, 0: AI
     created_at = Column(DateTime, default=datetime.utcnow, index=True)  # 인덱스 추가 (시간순 정렬 성능 향상)
+
+    # 복합 인덱스 추가 (쿼리 성능 대폭 향상)
+    __table_args__ = (
+        Index('ix_chat_user_session', 'user_id', 'session_id', 'created_at'),  # 빠른상담 세션 조회 최적화
+        Index('ix_chat_dog_session', 'dog_id', 'session_id', 'created_at'),    # 강아지 채팅 세션 조회 최적화
+        Index('ix_chat_session_user_msg', 'session_id', 'is_user', 'created_at'),  # 첫 메시지 조회 최적화
+    )
 
     # 관계 설정
     dog = relationship("DogProfile", back_populates="chat_messages")

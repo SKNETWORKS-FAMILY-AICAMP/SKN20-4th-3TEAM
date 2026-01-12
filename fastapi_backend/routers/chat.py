@@ -165,31 +165,41 @@ def get_quick_chat_sessions(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """현재 사용자의 빠른상담 세션 목록 조회"""
+    """현재 사용자의 빠른상담 세션 목록 조회 (최적화됨)"""
     from sqlalchemy import func
+    from sqlalchemy.sql import text
 
-    # session_id별로 그룹화하여 첫 번째 메시지와 시간 조회
-    sessions = db.query(
-        ChatMessage.session_id,
-        func.min(ChatMessage.created_at).label('created_at'),
-        func.count(ChatMessage.id).label('message_count')
-    ).filter(
-        ChatMessage.dog_id == None,
-        ChatMessage.user_id == current_user.id,
-        ChatMessage.session_id != None
-    ).group_by(ChatMessage.session_id).order_by(func.min(ChatMessage.created_at).desc()).all()
+    # 서브쿼리를 사용한 단일 쿼리로 최적화 (N+1 문제 해결)
+    query = text("""
+        SELECT
+            cm.session_id,
+            MIN(cm.created_at) as created_at,
+            COUNT(cm.id) as message_count,
+            (
+                SELECT message
+                FROM chat_messages
+                WHERE session_id = cm.session_id
+                  AND is_user = 1
+                  AND user_id = :user_id
+                ORDER BY created_at
+                LIMIT 1
+            ) as first_message
+        FROM chat_messages cm
+        WHERE cm.dog_id IS NULL
+          AND cm.user_id = :user_id
+          AND cm.session_id IS NOT NULL
+        GROUP BY cm.session_id
+        ORDER BY MIN(cm.created_at) DESC
+    """)
 
-    # 각 세션의 첫 번째 사용자 메시지 조회
+    sessions = db.execute(query, {"user_id": current_user.id}).fetchall()
+
     result = []
     for session in sessions:
-        first_msg = db.query(ChatMessage).filter(
-            ChatMessage.session_id == session.session_id,
-            ChatMessage.is_user == 1
-        ).order_by(ChatMessage.created_at).first()
-
+        first_msg = session.first_message or "새 대화"
         result.append({
             "session_id": session.session_id,
-            "title": first_msg.message[:30] + "..." if first_msg and len(first_msg.message) > 30 else (first_msg.message if first_msg else "새 대화"),
+            "title": first_msg[:30] + "..." if len(first_msg) > 30 else first_msg,
             "created_at": session.created_at,
             "message_count": session.message_count
         })
@@ -253,8 +263,8 @@ def get_dog_chat_sessions(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """현재 사용자의 강아지 채팅 세션 목록 조회"""
-    from sqlalchemy import func
+    """현재 사용자의 강아지 채팅 세션 목록 조회 (최적화됨)"""
+    from sqlalchemy.sql import text
 
     # 해당 강아지가 현재 사용자의 것인지 확인
     dog = db.query(DogProfile).filter(
@@ -268,27 +278,36 @@ def get_dog_chat_sessions(
             detail="다른 사용자의 강아지와는 채팅할 수 없습니다."
         )
 
-    # session_id별로 그룹화하여 첫 번째 메시지와 시간 조회
-    sessions = db.query(
-        ChatMessage.session_id,
-        func.min(ChatMessage.created_at).label('created_at'),
-        func.count(ChatMessage.id).label('message_count')
-    ).filter(
-        ChatMessage.dog_id == dog_id,
-        ChatMessage.session_id != None
-    ).group_by(ChatMessage.session_id).order_by(func.min(ChatMessage.created_at).desc()).all()
+    # 서브쿼리를 사용한 단일 쿼리로 최적화 (N+1 문제 해결)
+    query = text("""
+        SELECT
+            cm.session_id,
+            MIN(cm.created_at) as created_at,
+            COUNT(cm.id) as message_count,
+            (
+                SELECT message
+                FROM chat_messages
+                WHERE session_id = cm.session_id
+                  AND is_user = 1
+                  AND dog_id = :dog_id
+                ORDER BY created_at
+                LIMIT 1
+            ) as first_message
+        FROM chat_messages cm
+        WHERE cm.dog_id = :dog_id
+          AND cm.session_id IS NOT NULL
+        GROUP BY cm.session_id
+        ORDER BY MIN(cm.created_at) DESC
+    """)
 
-    # 각 세션의 첫 번째 사용자 메시지 조회
+    sessions = db.execute(query, {"dog_id": dog_id}).fetchall()
+
     result = []
     for session in sessions:
-        first_msg = db.query(ChatMessage).filter(
-            ChatMessage.session_id == session.session_id,
-            ChatMessage.is_user == 1
-        ).order_by(ChatMessage.created_at).first()
-
+        first_msg = session.first_message or "새 대화"
         result.append({
             "session_id": session.session_id,
-            "title": first_msg.message[:30] + "..." if first_msg and len(first_msg.message) > 30 else (first_msg.message if first_msg else "새 대화"),
+            "title": first_msg[:30] + "..." if len(first_msg) > 30 else first_msg,
             "created_at": session.created_at,
             "message_count": session.message_count
         })

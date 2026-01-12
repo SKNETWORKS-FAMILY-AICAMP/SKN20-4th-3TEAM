@@ -3,4 +3,32 @@ fastapi_backend/data
 __pycache__/
 .env
 
+# Claude Code 임시 파일들
+tmpclaude-*
+.claude/
 
+# Python 캐시 파일들
+*.pyc
+*.pyo
+*.pyd
+**/__pycache__/
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Django
+*.log
+*.pot
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
