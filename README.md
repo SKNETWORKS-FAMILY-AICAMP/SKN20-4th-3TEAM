@@ -188,7 +188,9 @@ pytest               - 단위 테스트
 
 ### 전체 아키텍처 다이어그램
 
-<img width="1376" height="768" alt="최종에 최종 아키텍쳐" src="https://github.com/user-attachments/assets/42bcbda4-8024-4b8b-b8e9-10eb3f428bc8" />
+<img width="1536" height="1024" alt="SKN20-4th-3TEAM_" src="https://github.com/user-attachments/assets/b47f79c0-a220-4243-a80e-4462a9488fcd" />
+
+
 
 
 
