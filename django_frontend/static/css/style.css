@@ -600,6 +600,7 @@ main {
     display: flex;
     flex-direction: column;
     background: var(--card-bg);
+    overflow: hidden;
 }
 
 /* ========================================
