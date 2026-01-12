@@ -48,6 +48,11 @@
 html, body {
     margin: 0;
     padding: 0;
+    min-height: 100vh;
+}
+
+/* 채팅 페이지만 overflow hidden */
+body.chat-page {
     height: 100vh;
     overflow: hidden;
 }
@@ -56,23 +61,22 @@ html, body {
    커스텀 스크롤바 (세련된 디자인)
    ======================================== */
 
-/* 프로필 선택 페이지 스크롤바 */
-.profile-select-container::-webkit-scrollbar {
-    width: 8px;
+/* 일반 페이지 body 스크롤바 */
+body:not(.chat-page)::-webkit-scrollbar {
+    width: 10px;
 }
 
-.profile-select-container::-webkit-scrollbar-track {
+body:not(.chat-page)::-webkit-scrollbar-track {
     background: #f1f5f9;
-    border-radius: 10px;
 }
 
-.profile-select-container::-webkit-scrollbar-thumb {
+body:not(.chat-page)::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, #3b82f6, #2563eb);
-    border-radius: 10px;
+    border-radius: 5px;
     transition: background 0.3s ease;
 }
 
-.profile-select-container::-webkit-scrollbar-thumb:hover {
+body:not(.chat-page)::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #2563eb, #1d4ed8);
 }
 
@@ -488,8 +492,6 @@ main {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
-    height: calc(100vh - 90px);
-    overflow-y: auto;
 }
 
 .profile-select-container h2 {

@@ -8,7 +8,7 @@
     <!-- ⭐ 캐시 무시를 위한 버전 파라미터 (settings.py의 STATIC_VERSION 사용) -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}?v={{ STATIC_VERSION }}">
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     <header>
         <nav class="navbar">
             <div class="nav-left">
