@@ -7,7 +7,7 @@
 [![Django](https://img.shields.io/badge/Django-092E20?style=flat-square&logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white)](https://www.sqlite.org/)
 
 </div>
 
@@ -69,8 +69,8 @@
 ### 프로젝트 정보
 - **프로젝트명**: Dr. 멍
 - **개발 기간**: 3차(RAG 챗봇) + 4차(웹 서비스) 통합 프로젝트
-- **팀 구성**: [인원 수]
-- **개발 환경**: Python 3.9+, PostgreSQL 14+
+- **팀 구성**: 5명
+- **개발 환경**: Python 3.11+, SQLite
 
 ### 프로젝트 배경
 반려동물 보호자들은 인터넷에서 신뢰할 수 있는 수의학 정보를 찾기 어렵고, 검색 엔진은 키워드 중심이라 반려견의 개별 상황을 고려한 상담이 불가능합니다. 또한 상담 시마다 반려견 정보를 반복 입력해야 하는 불편함이 존재했습니다.
@@ -111,7 +111,6 @@
 
 ### 1. 사용자 인증 시스템
 - **회원가입/로그인**: JWT 토큰 기반 인증
-- **이메일 인증**: 회원가입 시 이메일 검증
 - **비밀번호 재설정**: 안전한 계정 복구
 - **회원 탈퇴**: 개인정보 완전 삭제
 
@@ -137,8 +136,7 @@
 ### Frontend
 ```
 Django 4.2+          - 템플릿 렌더링 및 사용자 인터페이스
-HTML5/CSS3/JS        - 반응형 웹 디자인
-Bootstrap 5          - UI 컴포넌트
+HTML5/CSS3/JS        - 반응형 웹 디자인, 커스텀 UI
 ```
 
 ### Backend
@@ -152,23 +150,21 @@ Alembic              - 데이터베이스 마이그레이션
 ### AI/ML
 ```
 LangChain            - RAG 파이프라인 구축
-OpenAI API / LLaMA   - LLM 모델
-Sentence Transformers - 텍스트 임베딩
-Pinecone / Chroma    - 벡터 데이터베이스
+OpenAI GPT-4o-mini   - LLM 모델
+BAAI/bge-m3          - 텍스트 임베딩 (HuggingFace)
+Chroma               - 벡터 데이터베이스
 ```
 
 ### Database
 ```
-PostgreSQL 14+       - 주 데이터베이스
-Pinecone / Chroma    - 벡터 DB (수의학 지식)
-Redis                - 세션 및 캐싱
+SQLite               - 주 데이터베이스 (개발 환경)
+Chroma               - 벡터 DB (수의학 지식)
 ```
 
 ### Authentication
 ```
 JWT (PyJWT)          - 토큰 기반 인증
 bcrypt               - 비밀번호 해싱
-SMTP                 - 이메일 인증
 ```
 
 ### DevOps
@@ -192,9 +188,9 @@ pytest               - 단위 테스트
 
 ### 전체 아키텍처 다이어그램
 
-<p align="left">
-  <img src="https://media.discordapp.net/attachments/1395287333980344450/1460063556686057678/77576d01a3c444be.png?ex=69658da6&is=69643c26&hm=b190d5a7f1ad79dd859e9507709d79704af2cb873159641dfc30bbe643e6b84a&=&format=webp&quality=lossless&width=1347&height=530" width="1000">
-</p>
+<img width="1376" height="768" alt="최종에 최종 아키텍쳐" src="https://github.com/user-attachments/assets/42bcbda4-8024-4b8b-b8e9-10eb3f428bc8" />
+
+
 
 ### 데이터 흐름
 
@@ -238,91 +234,75 @@ pytest               - 단위 테스트
 
 ```sql
 ┌─────────────────────────────────────────────────────────────┐
-│                          User                               │
+│                          users                              │
 ├─────────────────────────────────────────────────────────────┤
-│ PK │ id              UUID                                   │
-│    │ email           VARCHAR(255)    UNIQUE, NOT NULL       │
-│    │ password_hash   VARCHAR(255)    NOT NULL               │
-│    │ username        VARCHAR(100)                           │
-│    │ is_verified     BOOLEAN         DEFAULT FALSE          │
-│    │ is_active       BOOLEAN         DEFAULT TRUE           │
-│    │ created_at      TIMESTAMP       DEFAULT NOW()          │
-│    │ updated_at      TIMESTAMP       DEFAULT NOW()          │
+│ PK │ id                INTEGER                              │
+│    │ email             VARCHAR     UNIQUE, NOT NULL         │
+│    │ username          VARCHAR     UNIQUE, NOT NULL         │
+│    │ hashed_password   VARCHAR     NOT NULL                 │
+│    │ created_at        DATETIME    DEFAULT CURRENT_TIMESTAMP│
 └─────────────────────────────────────────────────────────────┘
                               │
                               │ 1:N
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                       DogProfile                            │
+│                      dog_profiles                           │
 ├─────────────────────────────────────────────────────────────┤
-│ PK │ id                    UUID                             │
-│ FK │ user_id               UUID         → User.id           │
-│    │ name                  VARCHAR(100) NOT NULL            │
-│    │ age                   INTEGER                          │
-│    │ breed                 VARCHAR(100)                     │
-│    │ weight                FLOAT                            │
-│    │ medical_conditions    TEXT[]       (배열)              │
-│    │ medications           TEXT[]       (배열)              │
-│    │ notes                 TEXT                             │
-│    │ is_active             BOOLEAN      DEFAULT TRUE        │
-│    │ created_at            TIMESTAMP    DEFAULT NOW()       │
-│    │ updated_at            TIMESTAMP    DEFAULT NOW()       │
+│ PK │ id                INTEGER                              │
+│ FK │ owner_id          INTEGER      → users.id              │
+│    │ name              VARCHAR      NOT NULL                │
+│    │ breed             VARCHAR                              │
+│    │ age               INTEGER                              │
+│    │ birth_date        VARCHAR                              │
+│    │ gender            VARCHAR      (수컷/암컷)             │
+│    │ size              VARCHAR      (소형견/중형견/대형견)  │
+│    │ weight            VARCHAR                              │
+│    │ neutered          VARCHAR      (예/아니오)             │
+│    │ health_info       VARCHAR      (기저질환)              │
+│    │ medication        VARCHAR      (복용약)                │
+│    │ profile_image     VARCHAR      (프로필 이미지 경로)    │
+│    │ created_at        DATETIME     DEFAULT CURRENT_TIMESTAMP│
 └─────────────────────────────────────────────────────────────┘
                               │
                               │ 1:N
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                      Chat messages                          │
+│                      chat_messages                          │
 ├─────────────────────────────────────────────────────────────┤
-│ PK │ id                UUID                                 │
-│ FK │ user_id           UUID         → User.id               │
-│ FK │ dog_id            UUID         → DogProfile.id         │
-│    │ message_type      ENUM         ('user', 'assistant')   │
-│    │ content           TEXT         NOT NULL                │
-│    │ sources           JSONB        (출처 정보)             │
-│    │ chat_type         ENUM         ('custom', 'quick')     │
-│    │ created_at        TIMESTAMP    DEFAULT NOW()           │
-└─────────────────────────────────────────────────────────────┘
-
-
-┌─────────────────────────────────────────────────────────────┐
-│                   EmailVerification                         │
-├─────────────────────────────────────────────────────────────┤
-│ PK │ id              UUID                                   │
-│ FK │ user_id         UUID         → User.id                 │
-│    │ token           VARCHAR(255) UNIQUE                    │
-│    │ expires_at      TIMESTAMP                              │
-│    │ is_used         BOOLEAN      DEFAULT FALSE             │
-│    │ created_at      TIMESTAMP    DEFAULT NOW()             │
-└─────────────────────────────────────────────────────────────┘
-
-
-┌─────────────────────────────────────────────────────────────┐
-│                  RefreshToken (선택)                        │
-├─────────────────────────────────────────────────────────────┤
-│ PK │ id              UUID                                   │
-│ FK │ user_id         UUID         → User.id                 │
-│    │ token           VARCHAR(500) UNIQUE                    │
-│    │ expires_at      TIMESTAMP                              │
-│    │ is_revoked      BOOLEAN      DEFAULT FALSE             │
-│    │ created_at      TIMESTAMP    DEFAULT NOW()             │
+│ PK │ id                INTEGER                              │
+│ FK │ dog_id            INTEGER      → dog_profiles.id (NULL 가능)│
+│ FK │ user_id           INTEGER      → users.id (NULL 가능)  │
+│    │ session_id        VARCHAR      (세션 그룹화용)         │
+│    │ message           TEXT         NOT NULL                │
+│    │ is_user           INTEGER      (1: 사용자, 0: AI)      │
+│    │ created_at        DATETIME     DEFAULT CURRENT_TIMESTAMP│
+│    │                                                         │
+│    │ 인덱스:                                                 │
+│    │ - ix_chat_user_session (user_id, session_id, created_at)│
+│    │ - ix_chat_dog_session (dog_id, session_id, created_at) │
+│    │ - ix_chat_session_user_msg (session_id, is_user, created_at)│
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ### 관계 설명
 
-**User ↔ DogProfile (1:N)**
+**users ↔ dog_profiles (1:N)**
 - 한 사용자는 여러 반려견 프로필을 소유할 수 있음
 - `CASCADE DELETE`: 사용자 삭제 시 모든 반려견 프로필도 삭제
 
-**DogProfile ↔ ChatHistory (1:N)**
+**dog_profiles ↔ chat_messages (1:N)**
 - 한 반려견은 여러 대화 기록을 가짐
-- 반려견별로 독립적인 상담 히스토리 관리
+- 반려견별로 독립적인 상담 히스토리 관리 (session_id로 그룹화)
 - `CASCADE DELETE`: 프로필 삭제 시 관련 대화 기록도 삭제
 
-**User ↔ ChatHistory (1:N)**
+**users ↔ chat_messages (1:N)**
 - 사용자별 전체 대화 기록 추적 가능
-- 빠른 상담(dog_id NULL)도 저장 가능
+- 빠른 상담은 `dog_id = NULL`, `user_id`로만 저장
+
+### 세션 관리
+- **session_id**: 대화를 세션 단위로 그룹화
+- 같은 session_id를 가진 메시지들이 하나의 대화 세션을 구성
+- 사용자는 여러 세션을 가질 수 있으며 각 세션을 독립적으로 조회/삭제 가능
 
 ---
 
@@ -375,7 +355,7 @@ pytest               - 단위 테스트
 
 **2. 성능 최적화**
 - RAG 검색 속도 개선 필요 (현재 평균 3-5초)
-- 캐싱 전략 도입 검토 (Redis)
+- 캐싱 전략 도입 검토
 
 **3. 사용자 피드백 시스템**
 - 답변 품질 평가 기능 추가 필요
