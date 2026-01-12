@@ -52,6 +52,72 @@ html, body {
     overflow: hidden;
 }
 
+/* ========================================
+   커스텀 스크롤바 (세련된 디자인)
+   ======================================== */
+
+/* 프로필 선택 페이지 스크롤바 */
+.profile-select-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.profile-select-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+.profile-select-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #3b82f6, #2563eb);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+.profile-select-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #2563eb, #1d4ed8);
+}
+
+/* 사이드바 스크롤바 */
+.chat-sidebar::-webkit-scrollbar,
+.quick-chat-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-sidebar::-webkit-scrollbar-track,
+.quick-chat-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-sidebar::-webkit-scrollbar-thumb,
+.quick-chat-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.3);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+.chat-sidebar::-webkit-scrollbar-thumb:hover,
+.quick-chat-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.5);
+}
+
+/* 채팅 메시지 영역 스크롤바 */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.3);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.5);
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Roboto', sans-serif;
     background: var(--background);
@@ -421,7 +487,9 @@ main {
 .profile-select-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem 0;
+    padding: 2rem;
+    height: calc(100vh - 90px);
+    overflow-y: auto;
 }
 
 .profile-select-container h2 {
