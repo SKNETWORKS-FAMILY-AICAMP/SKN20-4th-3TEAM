@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}프로필 설정{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="settings-box">
+        <h2>프로필 설정</h2>
+        
+        <!-- 탭 메뉴 -->
+        <div class="settings-tabs">
+            <button class="tab-btn active" onclick="showTab('profile')">계정 정보</button>
+            <button class="tab-btn" onclick="showTab('password')">비밀번호 변경</button>
+        </div>
+
+        <!-- 계정 정보 탭 -->
+        <div id="profileTab" class="tab-content active">
+            <h3>계정 정보</h3>
+            <form method="POST" action="{% url 'accounts:update_profile' %}" class="settings-form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="email">이메일</label>
+                    <input type="email" id="email" name="email" 
+                           value="{{ user_info.email }}" disabled>
+                    <small class="form-text">이메일은 변경할 수 없습니다.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">닉네임</label>
+                    <input type="text" id="username" name="username" 
+                           value="{{ user_info.username }}" required>
+                </div>
+
+                <button type="submit" class="btn-primary">정보 수정</button>
+            </form>
+
+            <div class="danger-zone">
+                <h4>계정 삭제</h4>
+                <p>계정을 삭제하면 모든 데이터가 영구적으로 삭제되며 복구할 수 없습니다.</p>
+                <button class="btn-danger" onclick="confirmDelete()">계정 삭제</button>
+            </div>
+        </div>
+
+        <!-- 비밀번호 변경 탭 -->
+        <div id="passwordTab" class="tab-content">
+            <h3>비밀번호 변경</h3>
+            <form method="POST" action="{% url 'accounts:change_password' %}" class="settings-form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="current_password">현재 비밀번호</label>
+                    <input type="password" id="current_password" name="current_password" required
+                           placeholder="현재 비밀번호를 입력하세요">
+                </div>
+
+                <div class="form-group">
+                    <label for="new_password">새 비밀번호</label>
+                    <input type="password" id="new_password" name="new_password" required
+                           placeholder="새 비밀번호를 입력하세요">
+                </div>
+
+                <div class="form-group">
+                    <label for="new_password_confirm">새 비밀번호 확인</label>
+                    <input type="password" id="new_password_confirm" name="new_password_confirm" required
+                           placeholder="새 비밀번호를 다시 입력하세요">
+                </div>
+
+                <button type="submit" class="btn-primary">비밀번호 변경</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function showTab(tabName) {
+    // 모든 탭 버튼과 컨텐츠 비활성화
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    // 선택된 탭 활성화
+    if (tabName === 'profile') {
+        document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+        document.getElementById('profileTab').classList.add('active');
+    } else {
+        document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+        document.getElementById('passwordTab').classList.add('active');
+    }
+}
+
+function confirmDelete() {
+    if (confirm('정말로 계정을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
+        if (confirm('모든 강아지 프로필과 대화 내역이 삭제됩니다.\n정말 진행하시겠습니까?')) {
+            window.location.href = "{% url 'accounts:delete_account' %}";
+        }
+    }
+}
+</script>
+{% endblock %}

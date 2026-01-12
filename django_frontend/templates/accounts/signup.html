@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block title %}회원가입{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box">
+        <h2>회원가입</h2>
+        
+        <!-- 단계 표시 -->
+        <div class="signup-steps">
+            <div class="step" id="step-indicator-1">
+                <span class="step-number active">1</span>
+                <span class="step-text">이메일 인증</span>
+            </div>
+            <div class="step" id="step-indicator-2">
+                <span class="step-number">2</span>
+                <span class="step-text">정보 입력</span>
+            </div>
+        </div>
+
+        <!-- Step 1: 이메일 인증 -->
+        <form id="emailVerificationForm" class="auth-form" style="display: block;">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="email">이메일</label>
+                <div class="email-input-group">
+                    <input type="email" id="email" name="email" required 
+                           placeholder="example@email.com">
+                    <button type="button" id="sendCodeBtn" class="btn-send-code">
+                        인증번호 발송
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group" id="verificationGroup" style="display: none;">
+                <label for="verification_code">인증번호</label>
+                <div class="email-input-group">
+                    <input type="text" id="verification_code" name="verification_code" 
+                           placeholder="6자리 인증번호 입력" maxlength="6">
+                    <button type="button" id="verifyCodeBtn" class="btn-verify-code">
+                        확인
+                    </button>
+                </div>
+                <small id="timerText" style="color: #f56565; display: none;">남은 시간: <span id="timer">05:00</span></small>
+            </div>
+        </form>
+
+        <!-- Step 2: 비밀번호 및 닉네임 입력 -->
+        <form method="POST" id="signupForm" class="auth-form" style="display: none;">
+            {% csrf_token %}
+            <input type="hidden" id="verified_email" name="verified_email">
+            
+            <div class="form-group">
+                <label for="username">닉네임</label>
+                <input type="text" id="username" name="username" required 
+                       placeholder="사용할 닉네임을 입력하세요">
+            </div>
+
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" name="password" required 
+                       placeholder="비밀번호를 입력하세요">
+            </div>
+
+            <div class="form-group">
+                <label for="password_confirm">비밀번호 확인</label>
+                <input type="password" id="password_confirm" name="password_confirm" required 
+                       placeholder="비밀번호를 다시 입력하세요">
+            </div>
+
+            <button type="submit" class="btn-primary">회원가입 완료</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>이미 계정이 있으신가요? <a href="{% url 'accounts:login' %}">로그인</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+let timerInterval;
+let timeLeft = 300; // 5분 (300초)
+
+// 인증번호 발송
+document.getElementById('sendCodeBtn').addEventListener('click', async function() {
+    const email = document.getElementById('email').value;
+    
+    if (!email) {
+        alert('이메일을 입력해주세요.');
+        return;
+    }
+    
+    // 이메일 형식 검증
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert('올바른 이메일 형식이 아닙니다.');
+        return;
+    }
+    
+    this.disabled = true;
+    this.textContent = '발송 중...';
+    
+    try {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const response = await fetch('/accounts/send-verification/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ email: email })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('인증번호가 발송되었습니다. 이메일을 확인해주세요.');
+            document.getElementById('verificationGroup').style.display = 'block';
+            document.getElementById('timerText').style.display = 'block';
+            startTimer();
+            this.textContent = '재발송';
+        } else {
+            alert(data.message || '인증번호 발송에 실패했습니다.');
+            this.textContent = '인증번호 발송';
+        }
+    } catch (error) {
+        alert('서버 오류가 발생했습니다.');
+        this.textContent = '인증번호 발송';
+    } finally {
+        this.disabled = false;
+    }
+});
+
+// 타이머 시작
+function startTimer() {
+    clearInterval(timerInterval);
+    timeLeft = 300;
+    
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timer').textContent = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert('인증 시간이 만료되었습니다. 다시 시도해주세요.');
+            document.getElementById('verificationGroup').style.display = 'none';
+            document.getElementById('timerText').style.display = 'none';
+        }
+    }, 1000);
+}
+
+// 인증번호 확인
+document.getElementById('verifyCodeBtn').addEventListener('click', async function() {
+    const email = document.getElementById('email').value;
+    const code = document.getElementById('verification_code').value;
+    
+    if (!code) {
+        alert('인증번호를 입력해주세요.');
+        return;
+    }
+    
+    this.disabled = true;
+    this.textContent = '확인 중...';
+    
+    try {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const response = await fetch('/accounts/verify-code/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ 
+                email: email,
+                code: code 
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            clearInterval(timerInterval);
+            alert('이메일 인증이 완료되었습니다!');
+            
+            // Step 2로 이동
+            document.getElementById('emailVerificationForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'block';
+            document.getElementById('verified_email').value = email;
+            
+            // 단계 표시 업데이트
+            document.querySelector('#step-indicator-1 .step-number').classList.remove('active');
+            document.querySelector('#step-indicator-1 .step-number').classList.add('completed');
+            document.querySelector('#step-indicator-2 .step-number').classList.add('active');
+        } else {
+            alert(data.message || '인증번호가 일치하지 않습니다.');
+            this.textContent = '확인';
+        }
+    } catch (error) {
+        alert('서버 오류가 발생했습니다.');
+        this.textContent = '확인';
+    } finally {
+        this.disabled = false;
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>강아지 채팅 - AI 수의사가 24시간 상담해드립니다</title>
+    <!-- ⭐ 캐시 무시를 위한 버전 파라미터 (settings.py의 STATIC_VERSION 사용) -->
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}?v={{ STATIC_VERSION }}">
+</head>
+<body>
+    <div class="landing-container">
+        <!-- 배경 슬라이드쇼 -->
+        <div class="background-slideshow">
+            <div class="bg-slide active">
+                <img src="{% static 'images/corgi_lifestyle_16_9_1.png' %}" alt="강아지 AI 상담 1">
+            </div>
+            <div class="bg-slide">
+                <img src="{% static 'images/golden_friendship_16_9_1.png' %}" alt="강아지 AI 상담 2">
+            </div>
+            <div class="bg-slide">
+                <img src="{% static 'images/maltese_landscape_poster_1.png' %}" alt="강아지 AI 상담 3">
+            </div>
+            <div class="bg-slide">
+                <img src="{% static 'images/shiba_human_connection_16_9_1.png' %}" alt="강아지 AI 상담 4">
+            </div>
+            <div class="bg-slide">
+                <img src="{% static 'images/ai-generated-8985310_1280.jpg' %}" alt="강아지 AI 상담 5">
+            </div>
+            <div class="bg-slide">
+                <img src="{% static 'images/dog-237193_1280.jpg' %}" alt="강아지 AI 상담 6">
+            </div>
+        </div>
+
+        <!-- 중앙 콘텐츠 -->
+        <div class="landing-content">
+            <div class="hero-text">
+                <h2 class="main-title">
+                    Dr. 멍🐶 24시간<br>
+                    상담해드립니다
+                </h2>
+                <p class="sub-title">
+                    강아지 건강, 이제 AI와 함께<br>
+                    언제 어디서나 빠르고 정확한 상담
+                </p>
+            </div>
+
+            <div class="cta-buttons">
+                <a href="{% url 'accounts:login' %}" class="btn-landing btn-login">
+                    로그인하기
+                </a>
+                <a href="{% url 'accounts:signup' %}" class="btn-landing btn-signup">
+                    회원가입하기
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 배경 이미지 슬라이드쇼 - 위쪽 오른쪽에서 왼쪽으로
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.bg-slide');
+        const totalSlides = slides.length;
+
+        function nextSlide() {
+            // 현재 슬라이드에 slide-out 클래스 추가
+            slides[currentSlide].classList.add('slide-out');
+            slides[currentSlide].classList.remove('active');
+
+            // 다음 슬라이드 인덱스
+            currentSlide = (currentSlide + 1) % totalSlides;
+
+            // 다음 슬라이드 활성화
+            slides[currentSlide].classList.remove('slide-out');
+            slides[currentSlide].classList.add('active');
+
+            // 이전 슬라이드의 slide-out 클래스를 나중에 제거 (애니메이션 후)
+            setTimeout(() => {
+                slides.forEach((slide, index) => {
+                    if (index !== currentSlide) {
+                        slide.classList.remove('slide-out');
+                    }
+                });
+            }, 1500);
+        }
+
+        // 5초마다 자동 전환
+        setInterval(nextSlide, 5000);
+    </script>
+</body>
+</html>

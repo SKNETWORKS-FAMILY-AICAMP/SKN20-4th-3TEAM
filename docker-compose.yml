@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # FastAPI 백엔드 서비스
+  fastapi:
+    build:
+      context: ./fastapi_backend
+      dockerfile: Dockerfile
+    container_name: dog-chat-fastapi
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./fastapi_backend:/app
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=sqlite:///./dog_chat.db
+      - CHROMA_PERSIST_DIRECTORY=/app/data/ChromaDB_bge_m3
+    env_file:
+      - .env
+    networks:
+      - dog-chat-network
+    restart: unless-stopped
+    depends_on:
+      - django
+
+  # Django 프론트엔드 서비스
+  django:
+    build:
+      context: ./django_frontend
+      dockerfile: Dockerfile
+    container_name: dog-chat-django
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./django_frontend:/app
+      - static_volume:/app/static
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DJANGO_SETTINGS_MODULE=config.settings
+      - FASTAPI_URL=http://fastapi:8001
+    env_file:
+      - .env
+    networks:
+      - dog-chat-network
+    restart: unless-stopped
+
+networks:
+  dog-chat-network:
+    driver: bridge
+
+volumes:
+  static_volume:

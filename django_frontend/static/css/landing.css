@@ -1,0 +1,497 @@
+/* ========================================
+   Hero Section - "Trusted Innovation" Design
+   Lead Designer's Premium Landing Experience
+   Base Color: #0064FF
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 전역 변수 */
+:root {
+    --primary-blue: #0064FF;
+    --dark-blue: #0052CC;
+    --light-blue: #E6F2FF;
+    --white: #FFFFFF;
+    --background: #FFFFFF;
+    --section-bg: #F8FAFB;
+    --text-dark: #1A1D1F;
+    --text-medium: #6F767E;
+    --text-light: #9A9FA5;
+    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --shadow-large: 0 16px 48px rgba(0, 0, 0, 0.08);
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.18);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'SF Pro Display', 'Inter', 'Segoe UI', 'Noto Sans KR', sans-serif;
+    overflow-x: hidden;
+    background: var(--background);
+    color: var(--text-dark);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================
+   Hero Container - Split Layout
+   ======================================== */
+
+.landing-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 배경 이미지 슬라이드쇼 컨테이너 */
+.background-slideshow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* 배경 오버레이 - 텍스트 가독성을 위한 어두운 층 */
+.background-slideshow::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%);
+    z-index: 2;
+}
+
+/* ========================================
+   Center Content Area
+   ======================================== */
+
+.landing-content {
+    position: relative;
+    z-index: 10;
+    max-width: 900px;
+    padding: 80px 60px;
+    text-align: center;
+    animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Logo Section */
+.logo-section {
+    margin-bottom: 48px;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--white);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.02em;
+    justify-content: center;
+}
+
+/* Hero Text */
+.hero-text {
+    margin-bottom: 64px;
+}
+
+.main-title {
+    font-size: 4.5rem;
+    font-weight: 800;
+    line-height: 1.3;
+    margin-bottom: 36px;
+    color: var(--white);
+    letter-spacing: 0.02em;
+    word-break: keep-all;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 타이틀 강조 효과 */
+.main-title::after {
+    content: '';
+    display: block;
+    width: 100px;
+    height: 6px;
+    background: var(--primary-blue);
+    margin: 28px auto 0;
+    border-radius: 3px;
+}
+
+.sub-title {
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 2;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 0.05em;
+    word-break: keep-all;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   CTA Buttons - Premium Design
+   ======================================== */
+
+.cta-buttons {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 64px;
+    justify-content: center;
+}
+
+.btn-landing {
+    padding: 20px 48px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Primary Button - Filled Blue */
+.btn-login {
+    background: var(--primary-blue);
+    color: var(--white);
+    border: 2px solid var(--primary-blue);
+    box-shadow: 0 4px 12px rgba(0, 100, 255, 0.2);
+}
+
+.btn-login:hover {
+    background: var(--dark-blue);
+    border-color: var(--dark-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 100, 255, 0.3);
+}
+
+.btn-login:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 100, 255, 0.2);
+}
+
+/* Secondary Button - Outlined */
+.btn-signup {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--white);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.btn-signup:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.btn-signup:active {
+    transform: translateY(0);
+}
+
+/* ========================================
+   Features - Glassmorphism Cards
+   ======================================== */
+
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: nowrap;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.feature-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.feature-icon {
+    font-size: 1.75rem;
+    flex-shrink: 0;
+}
+
+.feature-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--white);
+    letter-spacing: -0.01em;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   Background Slideshow - Full Screen
+   ======================================== */
+
+/* Background Image Slide */
+.bg-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 1;
+}
+
+.bg-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Slide Animation - Top-Right to Left */
+.bg-slide.active {
+    opacity: 1;
+    animation: slideInFromTopRight 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.bg-slide.slide-out {
+    opacity: 0;
+    animation: slideOutToLeft 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideInFromTopRight {
+    0% {
+        transform: translateX(100%) scale(1);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutToLeft {
+    0% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-100%) scale(1);
+        opacity: 0;
+    }
+}
+
+
+/* ========================================
+   Entrance Animations
+   ======================================== */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+@media (max-width: 1200px) {
+    .main-title {
+        font-size: 4rem;
+    }
+
+    .sub-title {
+        font-size: 1.5rem;
+    }
+
+    .landing-content {
+        padding: 60px 40px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .landing-content {
+        max-width: 100%;
+        padding: 60px 40px;
+    }
+
+    .main-title {
+        font-size: 3.5rem;
+    }
+
+    .sub-title {
+        font-size: 1.4rem;
+    }
+
+    .features {
+        gap: 12px;
+    }
+
+    .feature-item {
+        padding: 14px 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .landing-content {
+        padding: 40px 24px;
+    }
+
+    .main-title {
+        font-size: 2.8rem;
+        line-height: 1.4;
+    }
+
+    .sub-title {
+        font-size: 1.3rem;
+        line-height: 1.9;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .btn-landing {
+        width: 100%;
+        padding: 18px 32px;
+        font-size: 1.1rem;
+    }
+
+    .features {
+        gap: 10px;
+        flex-wrap: nowrap;
+    }
+
+    .feature-item {
+        padding: 12px 14px;
+        flex-direction: row;
+        gap: 6px;
+        text-align: left;
+    }
+
+    .feature-icon {
+        font-size: 1.5rem;
+    }
+
+    .feature-text {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        font-size: 1.25rem;
+    }
+
+    .main-title {
+        font-size: 2.2rem;
+        line-height: 1.4;
+    }
+
+    .sub-title {
+        font-size: 1.1rem;
+        line-height: 1.8;
+    }
+
+    .hero-text {
+        margin-bottom: 40px;
+    }
+
+    .cta-buttons {
+        margin-bottom: 40px;
+    }
+
+    .btn-landing {
+        padding: 16px 28px;
+        font-size: 1rem;
+    }
+
+    .features {
+        gap: 8px;
+        flex-wrap: nowrap;
+    }
+
+    .feature-item {
+        padding: 10px 12px;
+        flex-direction: row;
+    }
+
+    .feature-icon {
+        font-size: 1.3rem;
+    }
+
+    .feature-text {
+        font-size: 0.75rem;
+    }
+}
+
+/* ========================================
+   Accessibility & Performance
+   ======================================== */
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus states for keyboard navigation */
+.btn-landing:focus,
+.feature-item:focus {
+    outline: 3px solid var(--primary-blue);
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .background-slideshow {
+        display: none;
+    }
+}

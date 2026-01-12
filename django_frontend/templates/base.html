@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}강아지 채팅{% endblock %}</title>
+    <!-- ⭐ 캐시 무시를 위한 버전 파라미터 (settings.py의 STATIC_VERSION 사용) -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v={{ STATIC_VERSION }}">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-left">
+                <!-- 항상 홈 버튼 표시 -->
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dogs:profile_select' %}" class="btn-home">🏠 홈</a>
+                {% else %}
+                    <a href="{% url 'landing' %}" class="btn-home">🏠 홈</a>
+                {% endif %}
+            </div>
+            <div class="nav-right">
+                <div class="nav-center">
+                    {% if user.is_authenticated %}
+                        <!-- 로그인 시: 닉네임 표시 -->
+                        <h1>🐕 반가워요! {{ user.username }}님</h1>
+                    {% endif %}
+                </div>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'chat:quick_chat' %}" class="btn-quick-chat">⚡ 빠른상담</a>
+                    <a href="{% url 'accounts:settings' %}" class="btn-settings">⚙️ 설정</a>
+                    <a href="{% url 'accounts:logout' %}" class="btn-logout">로그아웃</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <script>
+        // 메시지 자동 사라지기 (3초 후)
+        document.addEventListener('DOMContentLoaded', function() {
+            const messages = document.querySelectorAll('.alert');
+            messages.forEach(function(message) {
+                // 3초 후에 슬라이드 업 & 페이드아웃 시작
+                setTimeout(function() {
+                    message.style.transition = 'all 0.4s ease';
+                    message.style.opacity = '0';
+                    message.style.transform = 'translateY(-20px)';
+
+                    // 애니메이션 완료 후 DOM에서 제거
+                    setTimeout(function() {
+                        message.remove();
+                    }, 400);
+                }, 3000);
+            });
+        });
+    </script>
+
+    {% block extra_js %}
+    {% endblock %}
+</body>
+</html>

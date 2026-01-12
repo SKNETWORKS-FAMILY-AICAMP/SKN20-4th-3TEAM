@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}프로필 선택{% endblock %}
+
+{% block content %}
+<div class="profile-select-container">
+    <h2>어떤 강아지가 도움이 필요하신가요?</h2>
+    
+    <div class="profile-grid">
+        {% for dog in dogs %}
+        <div class="profile-card-wrapper">
+            <!-- 메뉴 버튼 -->
+            <div class="profile-menu">
+                <button class="menu-btn" onclick="toggleMenu(event, {{ dog.id }})">⋮</button>
+                <div class="menu-dropdown" id="menu-{{ dog.id }}">
+                    <a href="{% url 'dogs:profile_edit' dog.id %}" class="menu-item">✏️ 프로필 수정하기</a>
+                    <a href="#" onclick="confirmDelete(event, {{ dog.id }}, '{{ dog.name }}')" class="menu-item delete">🗑️ 삭제하기</a>
+                </div>
+            </div>
+            
+            <!-- 프로필 카드 -->
+            <a href="{% url 'dogs:profile_detail' dog.id %}" class="profile-card">
+                <div class="profile-image">
+                    {% if dog.profile_image %}
+                        <img src="{{ dog.profile_image }}" alt="{{ dog.name }}">
+                    {% else %}
+                        <div class="profile-placeholder">🐕</div>
+                    {% endif %}
+                </div>
+                <h3>{{ dog.name }}</h3>
+                <p class="profile-breed">{{ dog.breed|default:"믹스견" }}</p>
+            </a>
+        </div>
+        {% endfor %}
+        
+        <!-- 프로필 추가 카드 -->
+        <a href="{% url 'dogs:profile_create' %}" class="profile-card profile-add">
+            <div class="profile-image">
+                <div class="profile-placeholder add-icon">➕</div>
+            </div>
+            <h3>프로필 추가</h3>
+        </a>
+    </div>
+</div>
+
+<!-- 삭제 확인 폼 (숨김) -->
+<form id="deleteForm" method="POST" style="display: none;">
+    {% csrf_token %}
+</form>
+
+<script>
+// 메뉴 토글
+function toggleMenu(event, dogId) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // 다른 메뉴 닫기
+    document.querySelectorAll('.menu-dropdown').forEach(menu => {
+        if (menu.id !== `menu-${dogId}`) {
+            menu.classList.remove('show');
+        }
+    });
+    
+    // 현재 메뉴 토글
+    const menu = document.getElementById(`menu-${dogId}`);
+    menu.classList.toggle('show');
+}
+
+// 메뉴 외부 클릭 시 닫기
+document.addEventListener('click', function(event) {
+    if (!event.target.matches('.menu-btn')) {
+        document.querySelectorAll('.menu-dropdown').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+});
+
+// 삭제 확인
+function confirmDelete(event, dogId, dogName) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    if (confirm(`정말 "${dogName}" 프로필을 삭제하시겠습니까?\n\n삭제된 프로필과 대화 내역은 복구할 수 없습니다.`)) {
+        const form = document.getElementById('deleteForm');
+        form.action = `/dogs/${dogId}/delete/`;
+        form.submit();
+    }
+}
+</script>
+{% endblock %}
