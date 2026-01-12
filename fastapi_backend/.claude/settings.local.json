@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python run_migration.py:*)",
+      "Bash(sqlite3:*)",
+      "Bash(python migrate_add_session_id.py:*)"
+    ]
+  }
+}

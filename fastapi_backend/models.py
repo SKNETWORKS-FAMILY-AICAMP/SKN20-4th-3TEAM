@@ -48,9 +48,12 @@ class ChatMessage(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     dog_id = Column(Integer, ForeignKey("dog_profiles.id"), index=True, nullable=True)  # 빠른상담은 dog_id가 NULL
+    user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=True)  # 유저별 빠른채팅 구분용
+    session_id = Column(String, index=True, nullable=True)  # 세션별 그룹화용
     message = Column(Text, nullable=False)
     is_user = Column(Integer, default=1)  # 1: 사용자, 0: AI
     created_at = Column(DateTime, default=datetime.utcnow, index=True)  # 인덱스 추가 (시간순 정렬 성능 향상)
 
     # 관계 설정
     dog = relationship("DogProfile", back_populates="chat_messages")
+    user = relationship("User")
