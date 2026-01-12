@@ -24,7 +24,7 @@ def build_dog_context(dog) -> str:
     (dog: DogProfile 객체)
     """
 
-    disease = getattr(dog, "disease", None) # 없으면 None
+    health_info = getattr(dog, "health_info", None) # 없으면 None
     medication = getattr(dog, "medication", None)
     weight = getattr(dog, "weight", None)
     gender = getattr(dog, "gender", None)
@@ -41,8 +41,8 @@ def build_dog_context(dog) -> str:
         parts.append(f"- 성별: {gender}")
     if neutered is not None:
         parts.append(f"- 중성화 여부: {neutered}")
-    if disease:
-        parts.append(f"- 기저질환: {disease}")
+    if health_info:
+        parts.append(f"- 기저질환: {health_info}")
     if medication:
         parts.append(f"- 복용약: {medication}")
 
