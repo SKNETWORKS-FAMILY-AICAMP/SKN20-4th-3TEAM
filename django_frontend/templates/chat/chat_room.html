@@ -421,6 +421,12 @@ chatForm.addEventListener('submit', async (e) => {
     addMessageToUI(message, true);
     messageInput.value = '';
 
+    // 입력창과 전송 버튼 비활성화
+    messageInput.disabled = true;
+    const sendButton = chatForm.querySelector('.btn-send');
+    sendButton.disabled = true;
+    sendButton.textContent = '전송 중...';
+
     // 로딩 애니메이션 시작
     showLoadingMessage();
 
@@ -443,6 +449,13 @@ chatForm.addEventListener('submit', async (e) => {
         // 로딩 메시지 제거
         removeLoadingMessage();
 
+        // 입력창과 전송 버튼 다시 활성화
+        messageInput.disabled = false;
+        const sendButton = chatForm.querySelector('.btn-send');
+        sendButton.disabled = false;
+        sendButton.textContent = '전송';
+        messageInput.focus();
+
         if (data.success) {
             // AI 응답을 UI에 표시
             addMessageToUI(data.message, false);
@@ -457,6 +470,14 @@ chatForm.addEventListener('submit', async (e) => {
     } catch (error) {
         console.error('Error:', error);
         removeLoadingMessage();
+
+        // 에러 시에도 입력창 다시 활성화
+        messageInput.disabled = false;
+        const sendButton = chatForm.querySelector('.btn-send');
+        sendButton.disabled = false;
+        sendButton.textContent = '전송';
+        messageInput.focus();
+
         alert('서버 오류가 발생했습니다.');
     }
 });

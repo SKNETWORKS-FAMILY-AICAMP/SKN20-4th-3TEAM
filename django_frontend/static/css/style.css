@@ -1008,6 +1008,12 @@ main {
     box-shadow: 0 0 0 3px var(--blue-light-5);
 }
 
+.chat-input-form input[type="text"]:disabled {
+    background: var(--border-light);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 .btn-send {
     padding: 1rem 2rem;
     background: var(--blue-primary);
@@ -1027,6 +1033,13 @@ main {
 
 .btn-send:active {
     transform: translateY(0);
+}
+
+.btn-send:disabled {
+    background: var(--border-medium);
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
 }
 
 /* ========================================

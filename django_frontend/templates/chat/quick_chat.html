@@ -343,6 +343,12 @@ quickChatForm.addEventListener('submit', async (e) => {
     addQuickMessageToUI(message, true);
     quickMessageInput.value = '';
 
+    // 입력창과 전송 버튼 비활성화
+    quickMessageInput.disabled = true;
+    const sendButton = quickChatForm.querySelector('.btn-send');
+    sendButton.disabled = true;
+    sendButton.textContent = '전송 중...';
+
     // 로딩 애니메이션 시작
     showQuickLoadingMessage();
 
@@ -365,6 +371,13 @@ quickChatForm.addEventListener('submit', async (e) => {
         // 로딩 메시지 제거
         removeQuickLoadingMessage();
 
+        // 입력창과 전송 버튼 다시 활성화
+        quickMessageInput.disabled = false;
+        const sendButton = quickChatForm.querySelector('.btn-send');
+        sendButton.disabled = false;
+        sendButton.textContent = '전송';
+        quickMessageInput.focus();
+
         if (data.success) {
             // AI 응답을 UI에 표시
             addQuickMessageToUI(data.message, false);
@@ -379,6 +392,14 @@ quickChatForm.addEventListener('submit', async (e) => {
     } catch (error) {
         console.error('Error:', error);
         removeQuickLoadingMessage();
+
+        // 에러 시에도 입력창 다시 활성화
+        quickMessageInput.disabled = false;
+        const sendButton = quickChatForm.querySelector('.btn-send');
+        sendButton.disabled = false;
+        sendButton.textContent = '전송';
+        quickMessageInput.focus();
+
         alert('서버 오류가 발생했습니다.');
     }
 });

@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.conf import settings
 import requests
 import json
+from accounts.http_utils import FastAPIClient
 
 
 @login_required
@@ -12,7 +13,7 @@ def profile_select_view(request):
     token = request.session.get('access_token')
     
     try:
-        response = requests.get(
+        response = FastAPIClient.get(
             f'{settings.FASTAPI_BASE_URL}/api/dogs/',
             headers={'Authorization': f'Bearer {token}'}
         )
@@ -36,7 +37,7 @@ def profile_create_view(request):
     # GET 요청 시 프로필 개수 확인
     if request.method == 'GET':
         try:
-            response = requests.get(
+            response = FastAPIClient.get(
                 f'{settings.FASTAPI_BASE_URL}/api/dogs/',
                 headers={'Authorization': f'Bearer {token}'}
             )
@@ -79,7 +80,7 @@ def profile_create_view(request):
             age = current_year - int(birth_year)
         
         try:
-            response = requests.post(
+            response = FastAPIClient.post(
                 f'{settings.FASTAPI_BASE_URL}/api/dogs/',
                 json={
                     'name': name,
@@ -117,7 +118,7 @@ def profile_edit_view(request, dog_id):
     
     # 기존 프로필 정보 가져오기
     try:
-        response = requests.get(
+        response = FastAPIClient.get(
             f'{settings.FASTAPI_BASE_URL}/api/dogs/{dog_id}',
             headers={'Authorization': f'Bearer {token}'}
         )
@@ -160,7 +161,7 @@ def profile_edit_view(request, dog_id):
             age = current_year - int(birth_year)
         
         try:
-            response = requests.put(
+            response = FastAPIClient.put(
                 f'{settings.FASTAPI_BASE_URL}/api/dogs/{dog_id}',
                 json={
                     'name': name,
@@ -205,7 +206,7 @@ def profile_delete_view(request, dog_id):
         token = request.session.get('access_token')
         
         try:
-            response = requests.delete(
+            response = FastAPIClient.delete(
                 f'{settings.FASTAPI_BASE_URL}/api/dogs/{dog_id}',
                 headers={'Authorization': f'Bearer {token}'}
             )
@@ -226,7 +227,7 @@ def profile_detail_view(request, dog_id):
     token = request.session.get('access_token')
     
     try:
-        response = requests.get(
+        response = FastAPIClient.get(
             f'{settings.FASTAPI_BASE_URL}/api/dogs/{dog_id}',
             headers={'Authorization': f'Bearer {token}'}
         )

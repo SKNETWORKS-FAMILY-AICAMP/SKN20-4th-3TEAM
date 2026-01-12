@@ -131,6 +131,9 @@ LOGOUT_REDIRECT_URL = 'accounts:login'
 # FastAPI 백엔드 URL
 FASTAPI_BASE_URL = 'http://localhost:8001'
 
+# HTTP 요청 타임아웃 설정 (초)
+REQUEST_TIMEOUT = 30  # FastAPI 요청 타임아웃
+
 # 세션 설정
 # SESSION_COOKIE_AGE = 10  # 초 단위
 # SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # 브라우저 닫으면 세션 만료
