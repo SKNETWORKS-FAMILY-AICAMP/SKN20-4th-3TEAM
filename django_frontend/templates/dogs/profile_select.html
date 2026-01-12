@@ -4,8 +4,8 @@
 
 {% block content %}
 <div class="profile-select-container">
-    <h2>어떤 강아지에게 도움이 필요하신가요?</h2>
-    
+    <h2 id="randomTitle"></h2>
+
     <div class="profile-grid">
         {% for dog in dogs %}
         <div class="profile-card-wrapper">
@@ -49,6 +49,19 @@
 </form>
 
 <script>
+// 랜덤 타이틀 표시
+document.addEventListener('DOMContentLoaded', function() {
+    const titles = [
+        "어떤 아이의 건강이 걱정되어 오셨나요?",
+        "오늘 어떤 강아지를 도와드리면 좋을까요?",
+        "오늘 상담이 필요한 아이는 누구인가요?",
+        "어떤 아이의 건강을 먼저 살펴볼까요?"
+    ];
+
+    const randomIndex = Math.floor(Math.random() * titles.length);
+    document.getElementById('randomTitle').textContent = titles[randomIndex];
+});
+
 // 메뉴 토글
 function toggleMenu(event, dogId) {
     event.preventDefault();
