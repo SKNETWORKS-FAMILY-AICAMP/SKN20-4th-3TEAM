@@ -188,7 +188,8 @@ pytest               - 단위 테스트
 
 ### 전체 아키텍처 다이어그램
 
-<img width="1376" height="768" alt="최종 아키텍쳐" src="https://github.com/user-attachments/assets/247cba34-6783-4c77-94bc-3fd605b095b2" />
+<img width="1376" height="768" alt="최종에 최종 아키텍쳐" src="https://github.com/user-attachments/assets/42bcbda4-8024-4b8b-b8e9-10eb3f428bc8" />
+
 
 
 ### 데이터 흐름
