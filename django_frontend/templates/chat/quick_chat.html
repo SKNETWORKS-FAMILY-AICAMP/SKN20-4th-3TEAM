@@ -8,7 +8,7 @@
     <div class="quick-chat-sidebar">
         <!-- 안내 카드 -->
         <div class="quick-chat-info-card">
-            <div class="info-icon">⚡</div>
+            <div class="info-icon">🐶</div>
             <h3>빠른상담</h3>
             <p>강아지에 관한 일반적인 질문에<br>빠르게 답변해드립니다.</p>
         </div>
@@ -17,7 +17,10 @@
         <div class="quick-history-section">
             <div class="history-header">
                 <h4>대화 히스토리</h4>
-                <button class="btn-new-chat" onclick="startNewQuickChat()">+ 새 대화</button>
+                <div style="display: flex; gap: 5px;">
+                    <button class="btn-delete-all-history" onclick="deleteAllQuickHistory()" title="전체 히스토리 삭제">🗑️</button>
+                    <button class="btn-new-chat" onclick="startNewQuickChat()">+ 새 대화</button>
+                </div>
             </div>
             <div class="history-list" id="quickHistoryList">
                 <!-- JavaScript로 동적 생성 -->
@@ -28,15 +31,14 @@
     <!-- 오른쪽: 채팅창 -->
     <div class="quick-chat-main">
         <div class="quick-chat-header">
-            <h2>⚡ 빠른상담</h2>
-            <span class="chat-subtitle">AI 수의사와 대화하기</span>
+            <h2>🐶 빠른상담</h2>
         </div>
-        
+
         <div class="chat-messages" id="quickChatMessages">
             <!-- 초기 환영 메시지 -->
             <div class="welcome-message">
-                <div class="welcome-icon">⚡</div>
-                <h3>안녕하세요! AI 수의사입니다.</h3>
+                <div class="welcome-icon">🐶</div>
+                <h3>안녕하세요 DR.멍이 해결해 드립니다.</h3>
                 <p>궁금한 점이 있으시면 무엇이든 물어보세요!</p>
             </div>
         </div>
@@ -44,8 +46,8 @@
         <div class="chat-input-container">
             <form id="quickChatForm" class="chat-input-form">
                 {% csrf_token %}
-                <input type="text" id="quickMessageInput" name="message" 
-                       placeholder="강아지에 관해 궁금한 점을 물어보세요..." 
+                <input type="text" id="quickMessageInput" name="message"
+                       placeholder="강아지에 관해 궁금한 점을 물어보세요..."
                        autocomplete="off" required>
                 <button type="submit" class="btn-send">전송</button>
             </form>
@@ -58,110 +60,198 @@
 <script>
 let currentQuickSessionId = null;
 let currentQuickHistory = [];
-let quickChatSessions = JSON.parse(localStorage.getItem('quick_chat_sessions') || '[]');
 
 // 페이지 로드 시
 document.addEventListener('DOMContentLoaded', function() {
-    loadQuickChatHistory();
+    loadQuickChatSessions();
 });
 
-// 대화 히스토리 로드
-function loadQuickChatHistory() {
-    const historyList = document.getElementById('quickHistoryList');
-    historyList.innerHTML = '';
-    
-    if (quickChatSessions.length === 0) {
-        historyList.innerHTML = '<div class="no-history">대화 히스토리가 없습니다</div>';
-        return;
-    }
-    
-    quickChatSessions.forEach((session) => {
-        const historyItem = document.createElement('div');
-        historyItem.className = 'history-item';
-        if (session.id === currentQuickSessionId) {
-            historyItem.classList.add('active');
+// 세션 목록 로드
+async function loadQuickChatSessions() {
+    try {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const response = await fetch('/chat/quick/sessions/', {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        });
+
+        const data = await response.json();
+        const historyList = document.getElementById('quickHistoryList');
+        historyList.innerHTML = '';
+
+        if (data.sessions && data.sessions.length > 0) {
+            data.sessions.forEach((session) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                if (session.session_id === currentQuickSessionId) {
+                    historyItem.classList.add('active');
+                }
+
+                const date = new Date(session.created_at);
+                const dateStr = date.toLocaleString('ko-KR', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                historyItem.innerHTML = `
+                    <div class="history-content">
+                        <div class="history-title">${session.title}</div>
+                        <div class="history-date">${dateStr}</div>
+                    </div>
+                    <button class="btn-delete-session" onclick="deleteQuickSession('${session.session_id}', event)" title="삭제">×</button>
+                `;
+
+                historyItem.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('btn-delete-session')) {
+                        loadQuickSession(session.session_id);
+                    }
+                });
+
+                historyList.appendChild(historyItem);
+            });
+        } else {
+            historyList.innerHTML = '<div class="no-history">대화 히스토리가 없습니다</div>';
         }
-        
-        historyItem.innerHTML = `
-            <div class="history-title">${session.title}</div>
-            <div class="history-date">${session.date}</div>
-        `;
-        
-        historyItem.onclick = () => loadQuickSession(session.id);
-        historyList.appendChild(historyItem);
-    });
+    } catch (error) {
+        console.error('세션 목록 로드 실패:', error);
+    }
 }
 
 // 세션 로드
-function loadQuickSession(sessionId) {
-    const session = quickChatSessions.find(s => s.id === sessionId);
-    if (!session) return;
-    
-    currentQuickSessionId = sessionId;
-    currentQuickHistory = session.messages;
-    
-    const chatMessages = document.getElementById('quickChatMessages');
-    chatMessages.innerHTML = '';
-    
-    currentQuickHistory.forEach(msg => {
-        addQuickMessageToUI(msg.text, msg.isUser, msg.timestamp);
-    });
-    
-    loadQuickChatHistory();
-    scrollToBottom();
+async function loadQuickSession(sessionId) {
+    try {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const response = await fetch(`/chat/quick/sessions/${sessionId}/messages/`, {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        });
+
+        const data = await response.json();
+
+        currentQuickSessionId = sessionId;
+        const chatMessages = document.getElementById('quickChatMessages');
+        chatMessages.innerHTML = '';
+
+        if (data.messages && data.messages.length > 0) {
+            data.messages.forEach(msg => {
+                addQuickMessageToUI(msg.message, msg.is_user === 1, msg.created_at);
+            });
+        }
+
+        loadQuickChatSessions();
+        scrollToBottom();
+    } catch (error) {
+        console.error('세션 로드 실패:', error);
+    }
+}
+
+// 세션 삭제
+async function deleteQuickSession(sessionId, event) {
+    event.stopPropagation();
+
+    if (!confirm('이 대화를 삭제하시겠습니까?')) {
+        return;
+    }
+
+    try {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const response = await fetch(`/chat/quick/sessions/${sessionId}/delete/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // 현재 보고 있던 세션이 삭제된 경우
+            if (currentQuickSessionId === sessionId) {
+                currentQuickSessionId = null;
+                currentQuickHistory = [];
+                const chatMessages = document.getElementById('quickChatMessages');
+                chatMessages.innerHTML = `
+                    <div class="welcome-message">
+                        <div class="welcome-icon">🐶</div>
+                        <h3>안녕하세요 DR.멍이 해결해 드립니다.</h3>
+                        <p>궁금한 점이 있으시면 무엇이든 물어보세요!</p>
+                    </div>
+                `;
+            }
+
+            loadQuickChatSessions();
+        } else {
+            alert('세션 삭제에 실패했습니다: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('서버 오류가 발생했습니다.');
+    }
+}
+
+// 전체 히스토리 삭제
+async function deleteAllQuickHistory() {
+    if (!confirm('모든 빠른상담 히스토리를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
+        return;
+    }
+
+    try {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const response = await fetch('/chat/quick/history/delete/', {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert(`${data.deleted_count}개의 메시지가 삭제되었습니다.`);
+
+            // 화면 초기화
+            currentQuickSessionId = null;
+            currentQuickHistory = [];
+            const chatMessages = document.getElementById('quickChatMessages');
+            chatMessages.innerHTML = `
+                <div class="welcome-message">
+                    <div class="welcome-icon">🐶</div>
+                    <h3>안녕하세요 DR.멍이 해결해 드립니다.</h3>
+                    <p>궁금한 점이 있으시면 무엇이든 물어보세요!</p>
+                </div>
+            `;
+
+            loadQuickChatSessions();
+        } else {
+            alert('히스토리 삭제에 실패했습니다: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('서버 오류가 발생했습니다.');
+    }
 }
 
 // 새 대화 시작
 function startNewQuickChat() {
-    if (currentQuickHistory.length > 0) {
-        saveCurrentQuickSession();
-    }
-    
     currentQuickSessionId = Date.now().toString();
     currentQuickHistory = [];
-    
+
     const chatMessages = document.getElementById('quickChatMessages');
     chatMessages.innerHTML = `
         <div class="welcome-message">
-            <div class="welcome-icon">⚡</div>
-            <h3>안녕하세요! 강아지 전문 상담입니다.</h3>
-            <p>궁금하신 점을 자유롭게 물어보세요!</p>
+            <div class="welcome-icon">🐶</div>
+            <h3>안녕하세요 DR.멍이 해결해 드립니다.</h3>
+            <p>궁금한 점이 있으시면 무엇이든 물어보세요!</p>
         </div>
     `;
-    
-    loadQuickChatHistory();
-}
 
-// 현재 세션 저장
-function saveCurrentQuickSession() {
-    if (currentQuickHistory.length === 0) return;
-    
-    const existingIndex = quickChatSessions.findIndex(s => s.id === currentQuickSessionId);
-    const firstMessage = currentQuickHistory.find(m => m.isUser);
-    
-    const session = {
-        id: currentQuickSessionId,
-        title: firstMessage ? firstMessage.text.substring(0, 30) + (firstMessage.text.length > 30 ? '...' : '') : '새 대화',
-        date: new Date().toLocaleString('ko-KR', { 
-            month: 'short', 
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        }),
-        messages: currentQuickHistory
-    };
-    
-    if (existingIndex >= 0) {
-        quickChatSessions[existingIndex] = session;
-    } else {
-        quickChatSessions.unshift(session);
-    }
-    
-    if (quickChatSessions.length > 20) {
-        quickChatSessions = quickChatSessions.slice(0, 20);
-    }
-    
-    localStorage.setItem('quick_chat_sessions', JSON.stringify(quickChatSessions));
+    loadQuickChatSessions();
 }
 
 // 자동 스크롤
@@ -244,16 +334,12 @@ quickChatForm.addEventListener('submit', async (e) => {
     const message = quickMessageInput.value.trim();
     if (!message) return;
 
-    if (currentQuickHistory.length === 0) {
+    // 새 세션 시작 (첫 메시지인 경우)
+    if (!currentQuickSessionId) {
         currentQuickSessionId = Date.now().toString();
     }
 
-    const userMsg = {
-        text: message,
-        isUser: true,
-        timestamp: new Date().toISOString()
-    };
-    currentQuickHistory.push(userMsg);
+    // UI에 사용자 메시지 즉시 표시
     addQuickMessageToUI(message, true);
     quickMessageInput.value = '';
 
@@ -268,7 +354,10 @@ quickChatForm.addEventListener('submit', async (e) => {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrftoken
             },
-            body: JSON.stringify({ message: message })
+            body: JSON.stringify({
+                message: message,
+                session_id: currentQuickSessionId
+            })
         });
 
         const data = await response.json();
@@ -277,16 +366,13 @@ quickChatForm.addEventListener('submit', async (e) => {
         removeQuickLoadingMessage();
 
         if (data.success) {
-            const aiMsg = {
-                text: data.message,
-                isUser: false,
-                timestamp: new Date().toISOString()
-            };
-            currentQuickHistory.push(aiMsg);
+            // AI 응답을 UI에 표시
             addQuickMessageToUI(data.message, false);
 
-            saveCurrentQuickSession();
-            loadQuickChatHistory();
+            // 세션 목록 갱신 (약간의 딜레이 후 조회하여 DB 커밋 완료 보장)
+            setTimeout(() => {
+                loadQuickChatSessions();
+            }, 300);
         } else {
             alert('메시지 전송 실패: ' + data.error);
         }
@@ -300,19 +386,19 @@ quickChatForm.addEventListener('submit', async (e) => {
 // UI에 메시지 추가
 function addQuickMessageToUI(text, isUser, timestamp) {
     const chatMessages = document.getElementById('quickChatMessages');
-    
+
     const welcomeMsg = chatMessages.querySelector('.welcome-message');
     if (welcomeMsg) {
         welcomeMsg.remove();
     }
-    
+
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
-    
+
     const contentDiv = document.createElement('div');
     contentDiv.className = 'message-content';
     contentDiv.textContent = text;
-    
+
     const timeDiv = document.createElement('div');
     timeDiv.className = 'message-time';
     const time = timestamp ? new Date(timestamp) : new Date();
@@ -320,19 +406,12 @@ function addQuickMessageToUI(text, isUser, timestamp) {
         hour: '2-digit',
         minute: '2-digit'
     });
-    
+
     messageDiv.appendChild(contentDiv);
     messageDiv.appendChild(timeDiv);
     chatMessages.appendChild(messageDiv);
-    
+
     scrollToBottom();
 }
-
-// 페이지 나갈 때 저장
-window.addEventListener('beforeunload', () => {
-    if (currentQuickHistory.length > 0) {
-        saveCurrentQuickSession();
-    }
-});
 </script>
 {% endblock %}
