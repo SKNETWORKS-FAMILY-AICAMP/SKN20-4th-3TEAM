@@ -607,19 +607,14 @@ main {
    ======================================== */
 
 .dog-profile-card {
-    background: var(--blue-primary);
+    background: var(--surface);
     padding: 1.25rem;
     border-radius: 12px;
     text-align: center;
     margin-bottom: 1.25rem;
-    box-shadow: var(--shadow-md);
-    border: none;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
     flex-shrink: 0;
-    min-height: 140px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    color: var(--text-white);
 }
 
 .dog-avatar-large {
@@ -628,8 +623,8 @@ main {
     margin: 0 auto 0.75rem;
     border-radius: 50%;
     overflow: hidden;
-    border: 3px solid rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.3);
+    border: 3px solid var(--blue-light-3);
+    background: var(--blue-light-5);
 }
 
 .dog-avatar-large img {
@@ -645,11 +640,11 @@ main {
     align-items: center;
     justify-content: center;
     font-size: 2.5rem;
-    background: rgba(255, 255, 255, 0.3);
+    background: var(--blue-light-5);
 }
 
 .dog-name {
-    color: var(--text-white);
+    color: var(--text-primary);
     font-size: 1.25rem;
     margin-bottom: 0.75rem;
     font-weight: 700;
@@ -669,9 +664,9 @@ main {
 .info-item {
     width: 100%;
     padding: 0.6rem 1rem;
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--blue-light-5);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid var(--border-medium);
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -679,13 +674,13 @@ main {
 
 .info-label {
     font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--text-secondary);
     font-weight: 600;
 }
 
 .info-value {
     font-weight: 700;
-    color: var(--text-white);
+    color: var(--blue-primary);
     font-size: 0.9rem;
 }
 
@@ -700,9 +695,9 @@ main {
 .btn-toggle-details {
     width: 100%;
     padding: 0.6rem;
-    background: rgba(255, 255, 255, 0.2);
-    color: var(--text-white);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: var(--blue-light-5);
+    color: var(--text-primary);
+    border: 1px solid var(--blue-light-3);
     border-radius: 8px;
     cursor: pointer;
     display: flex;
@@ -714,28 +709,26 @@ main {
 }
 
 .btn-toggle-details:hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.5);
+    background: var(--blue-light-4);
 }
 
 .dog-details {
     margin-top: 0.5rem;
     padding: 0.75rem;
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--blue-light-5);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid var(--border-medium);
 }
 
 .detail-item {
     padding: 0.5rem 0.75rem;
     margin-bottom: 0.5rem;
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--surface);
     border-radius: 6px;
     font-size: 0.85rem;
     line-height: 1.4;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid var(--border-light);
     font-weight: 500;
-    color: var(--text-white);
 }
 
 .detail-item:empty {
@@ -747,7 +740,7 @@ main {
 }
 
 .detail-item strong {
-    color: var(--text-white);
+    color: var(--blue-dark-2);
     margin-right: 0.5rem;
     font-weight: 700;
 }
