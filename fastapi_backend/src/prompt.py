@@ -95,6 +95,16 @@ def get_rag_prompt2():
     ])
 
 
+def get_intent_prompt():
+    """의도 분류 프롬프트: 반려견 건강 관련 질문 여부 판단"""
+    return PromptTemplate.from_template("""다음 질문이 반려견의 건강, 질병, 증상, 의료, 돌봄과 관련된 질문인지 판단하세요.
+
+질문: {question}
+
+반려견 건강/의료 관련이면 "dog_health", 그 외에는 "other"만 출력하세요.
+판단:""")
+
+
 def get_rewrite_prompt():
     """질문 변환 프롬프트"""
     return PromptTemplate.from_template("""

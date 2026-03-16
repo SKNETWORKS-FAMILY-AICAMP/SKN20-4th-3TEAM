@@ -40,6 +40,12 @@ torch==2.1.0
 # Text Processing
 langchain-text-splitters>=0.0.0
 
+# LangGraph (RAG 파이프라인 워크플로우)
+langgraph>=0.1.0
+
+# Web Search Fallback
+duckduckgo-search>=5.0.0
+
 # Utilities
 python-dotenv>=1.0.0
 pyyaml>=6.0
